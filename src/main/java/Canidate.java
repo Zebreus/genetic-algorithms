@@ -40,7 +40,7 @@ public class Canidate {
         return vertexList;
     }
 
-    public double calculateFitness(boolean doOutput) {
+    public double[] calculateFitness(boolean doOutput) {
         double fitness = 0d;
 
         int hydrophobicBonds = calculateBonds();
@@ -53,7 +53,7 @@ public class Canidate {
                     + " [hydrophobicBonds = " + hydrophobicBonds + " | overlaps = " + overlaps + "]\n");
         }
 
-        return fitness;
+        return new double[]{fitness, hydrophobicBonds, overlaps};
     }
 
     public ArrayList<Vertex> getVertexList() {
