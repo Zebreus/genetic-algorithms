@@ -1,8 +1,13 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Main {
 
     public static void main(String[] args) {
+
+        ProteinDrawer pdraw = new ProteinDrawer("./visualization/individual/", "image.png");
 
         int[] isHydrophobic =       {0, 0, 0, 1, 0, 1, 1, 0, 1}; // 0 = no | 1 = yes
         // Last outgoing direction has no influence on the protein
@@ -10,9 +15,7 @@ public class Main {
 
         Canidate c = new Canidate(isHydrophobic, outgoingDirection);
         c.calculateFitness(true);
-        c.printProtein();
-
-
+        pdraw.printProtein(c.getVertexList());
 
         Random rd = new Random();
         int proteinSize = 20;
@@ -38,6 +41,6 @@ public class Main {
         System.out.println();
         Canidate cRandom = new Canidate(isHydrophobicRandom, outgoingDirectionRandom);
         cRandom.calculateFitness(true);
-        cRandom.printProtein();
+        pdraw.printProtein(cRandom.getVertexList());
     }
 }
