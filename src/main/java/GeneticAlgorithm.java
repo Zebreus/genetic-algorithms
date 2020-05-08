@@ -21,6 +21,9 @@ public class GeneticAlgorithm {
     double overallBestFitness;
     Canidate overallBest;
 
+    double mutationChance;
+    double mutationDecline;
+
     // Initialize with protein
     public GeneticAlgorithm (String logfile, int[] protein, int pop, int gens) {
         this.logfile = logfile;
@@ -33,6 +36,8 @@ public class GeneticAlgorithm {
         this.fitness = new double[populationSize];
 
         this.overallBestFitness = 0;
+        this.mutationChance = 1.0; // Guaranteed mutation in the first generation
+        this.mutationDecline = 0.001; // Decline in mutation probablility with generations -> ex with 0.05: 2nd 0.95, 3rd 0.9025, 4th 0.857
 
         // Clear log file
         String content = "";
@@ -63,7 +68,8 @@ public class GeneticAlgorithm {
         for (int gen = 0; gen < totalGenerations-1; gen++) {
             int bestIndex = evaluateGeneration(gen);
             population = pickSurvivors(bestIndex);
-            mutateGeneration(1, 1);
+            mutateGeneration(mutationChance, 1);
+            mutationChance *= (1 - mutationDecline);
             System.out.println();
         }
         evaluateGeneration(totalGenerations-1);

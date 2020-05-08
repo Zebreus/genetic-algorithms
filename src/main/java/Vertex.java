@@ -23,10 +23,10 @@ class Vertex {
         else if (x == vertex.x && y == vertex.y -1) {
             return true; // North
         }
-        else if (x == vertex.x + 1 && y == vertex.y + 1) {
+        else if (x == vertex.x + 1 && y == vertex.y) {
             return true; // West
         }
-        else if (x == vertex.x - 1 && y == vertex.y + 1) {
+        else if (x == vertex.x - 1 && y == vertex.y) {
             return true; // East
         }
         else {

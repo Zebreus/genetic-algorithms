@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
         int[] protein = new int[]{1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1};
-        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 100, 100);
+        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 100, 500);
         ga.simulateGenerations();
 
 //        ProteinDrawer pdraw = new ProteinDrawer("./visualization/individual/", "image.png");
