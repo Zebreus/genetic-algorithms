@@ -15,19 +15,22 @@ public class GeneticAlgorithm {
     int totalGenerations;
 
     int[] isHydrophobic;
-    Canidate[] population;
+    Candidate[] population;
 
     double totalFitness;
     double[] fitness;
 
     double overallBestFitness;
-    Canidate overallBest;
+    Candidate overallBest;
 
     double mutationChance;
     double mutationDecline;
     int mutationAttemptsPerCanidate;
     double crossoverChance;
     double crossoverDecline;
+
+    int selectionVariant = 1; // 0 = Fitness Proportional | 1 = Tournament
+    int k = 5; // Number of selected Candidates to face off in a tournament selection
 
     // Initialize with protein
     public GeneticAlgorithm (String logfile, int[] protein, int pop, int gens) {
@@ -45,7 +48,7 @@ public class GeneticAlgorithm {
         this.mutationDecline = 0.001; // Decline in mutation probablility with generations -> ex with 0.05: 2nd 0.95, 3rd 0.9025, 4th 0.857
         this.mutationAttemptsPerCanidate = 1;
         this.crossoverChance = 0.2;
-        this.crossoverDecline = 0.05;
+        this.crossoverDecline = 0.01;
 
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
@@ -58,15 +61,15 @@ public class GeneticAlgorithm {
     }
 
     // Generate initial population
-    private Canidate[] generateInitalPopulation() {
-        Canidate[] population = new Canidate[populationSize];
+    private Candidate[] generateInitalPopulation() {
+        Candidate[] population = new Candidate[populationSize];
 
         for (int i = 0; i < populationSize; i++) {
             int[] canidateDirections = new int[isHydrophobic.length];
             for (int j = 0; j < isHydrophobic.length; j++) {
                 canidateDirections[j] = rand.nextInt(4);
             }
-            population[i] = new Canidate(isHydrophobic, canidateDirections);
+            population[i] = new Candidate(isHydrophobic, canidateDirections);
         }
 
         return population;
@@ -74,8 +77,8 @@ public class GeneticAlgorithm {
 
     public void simulateGenerations() {
         for (int gen = 0; gen < totalGenerations-1; gen++) {
-            int bestIndex = evaluateGeneration(gen);
-            population = pickSurvivors(bestIndex);
+            evaluateGeneration(gen);
+            population = pickSurvivors();
 
             crossoverGeneration(crossoverChance);
             crossoverChance *= (1 - crossoverDecline);
@@ -90,7 +93,6 @@ public class GeneticAlgorithm {
 
     private int evaluateGeneration(int gen) {
         // Evaluate current generation
-// DEBUG
         System.out.println("Generation " + gen + ":");
 
         double bestFitness = 0;
@@ -111,7 +113,7 @@ public class GeneticAlgorithm {
         // Save the overall best
         if (bestFitness > overallBestFitness) {
             overallBestFitness = bestFitness;
-            overallBest = new Canidate(this.isHydrophobic, population[bestIndex].getOutgoing());
+            overallBest = new Candidate(this.isHydrophobic, population[bestIndex].getOutgoing());
         }
 
         double averageFitness = totalFitness / populationSize;
@@ -129,14 +131,22 @@ public class GeneticAlgorithm {
         return bestIndex;
     }
 
-    private Canidate[] pickSurvivors(int bestIndex) {
+    private Candidate[] pickSurvivors() {
+        if (selectionVariant == 0) {
+            return fitnessProportionalSelection();
+        } else {
+            return tournamentSelection();
+        }
+    }
+
+    private Candidate[] fitnessProportionalSelection() {
         // Pick set for next generation
         double[] proportionalFitness = new double[populationSize];
         for (int i = 0; i < populationSize; i++) {
             proportionalFitness[i] = fitness[i] / totalFitness;
         }
 
-        Canidate[] newPopulation = new Canidate[populationSize];
+        Candidate[] newPopulation = new Candidate[populationSize];
         for (int i = 0; i < populationSize; i++) {
             double picked = rand.nextDouble();
             int j = -1;
@@ -144,7 +154,28 @@ public class GeneticAlgorithm {
                 j++;
                 picked -= proportionalFitness[j];
             }
-            newPopulation[i] = new Canidate(this.isHydrophobic, population[j].getOutgoing());
+            newPopulation[i] = new Candidate(this.isHydrophobic, population[j].getOutgoing());
+        }
+
+        return newPopulation;
+    }
+
+    private Candidate[] tournamentSelection() {
+        Candidate[] newPopulation = new Candidate[populationSize];
+        double tournamentScoreMax = 0;
+        int tournamentChoosenIndex = 0;
+
+        for (int i = 0; i < populationSize; i++) {
+            tournamentScoreMax = 0;
+            for (int ik = 0; ik < k; ik++) {
+                int nextIndex = rand.nextInt(populationSize);
+                double nextScore = population[nextIndex].calculateFitness(false)[0]; // TODO: Save fitness in canidate to avoid recalculation every time
+                if (tournamentScoreMax < nextScore){
+                    tournamentScoreMax = nextScore;
+                    tournamentChoosenIndex = nextIndex;
+                }
+            }
+            newPopulation[i] = new Candidate(this.isHydrophobic, population[tournamentChoosenIndex].getOutgoing());
         }
 
         return newPopulation;

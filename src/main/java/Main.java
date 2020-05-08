@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         int[] protein = new int[]{1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1};
-        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 100, 200); // Do NOT go OVER 1_000_000 generations, as the filenames don't play nice then
+        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 100, 300); // Do NOT go OVER 1_000_000 generations, as the filenames don't play nice then
         ga.simulateGenerations();
 
         try {

@@ -1,9 +1,7 @@
-import javax.print.attribute.standard.PrinterMakeAndModel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class Canidate {
+public class Candidate {
 
     // Points per hydrophobic bond
     static int POINTS_PER_BOND = 1;
@@ -12,7 +10,7 @@ public class Canidate {
     int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
     ArrayList<Vertex> vertexList;
 
-    public Canidate(int[] isH, int[] oD) {
+    public Candidate(int[] isH, int[] oD) {
         this.isHydrophobic = isH;
         this.outgoingDirection = oD;
         this.vertexList = constructVertexes();
@@ -103,7 +101,7 @@ public class Canidate {
         this.vertexList = constructVertexes();
     }
 
-    public void crossover(Canidate partner, int crossoverPlace) {
+    public void crossover(Candidate partner, int crossoverPlace) {
         // Save this gene for a moment while skipping the part that stays
         int[] originalDirections = new int[outgoingDirection.length];
         for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
