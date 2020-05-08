@@ -1,4 +1,6 @@
+import javax.print.attribute.standard.PrinterMakeAndModel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Canidate {
@@ -50,7 +52,7 @@ public class Canidate {
 
         if (doOutput) {
             System.out.println("The fitness is: " + fitness
-                    + " [hydrophobicBonds = " + hydrophobicBonds + " | overlaps = " + overlaps + "]\n");
+                    + " [hydrophobicBonds = " + hydrophobicBonds + " | overlaps = " + overlaps + "]");
         }
 
         return new double[]{fitness, hydrophobicBonds, overlaps};
@@ -94,5 +96,27 @@ public class Canidate {
         }
 
         return overlaps / 2;
+    }
+
+    public void mutateDir(int mutationPlace, int mutation) {
+        outgoingDirection[mutationPlace] = mutation;
+        this.vertexList = constructVertexes();
+    }
+
+    @Override
+    public String toString() {
+        return "Canidate{" +
+                "outgoingDirection=" + Arrays.toString(outgoingDirection) +
+                '}';
+    }
+
+    public int[] getOutgoing() {
+        int[] newOut = new int[this.outgoingDirection.length];
+
+        for(int i = 0; i < this.outgoingDirection.length; i++) {
+            newOut[i] = this.outgoingDirection[i];
+        }
+
+        return newOut;
     }
 }

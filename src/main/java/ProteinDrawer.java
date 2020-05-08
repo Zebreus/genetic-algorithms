@@ -32,7 +32,7 @@ public class ProteinDrawer {
     Color imageHydrophobic = new Color(205, 0, 0);
     Color imageHydrophilic = new Color(0, 0, 255);
     Color imageMixed = new Color(205, 0, 205);
-    Color imageAminoText = new Color(200, 200, 200);
+    Color imageAminoText = new Color(180, 180, 180);
     Color imageText = new Color(0,0,0);
 
     public ProteinDrawer(String folder, String filename) {
@@ -73,10 +73,12 @@ public class ProteinDrawer {
                         break;
 
                     case Hydrophobic:
+                    case HydrophobicMulti:
                         aminoColor = imageHydrophobic;
                         break;
 
                     case Hydrophilic:
+                    case HydrophilicMulti:
                         aminoColor = imageHydrophilic;
                         break;
 
@@ -121,7 +123,7 @@ public class ProteinDrawer {
         }
 
         g2.setColor(imageText);
-        String label = "Fitness: " + fitBondOver[0]
+        String label = "Fitness: " + String.format("%.4f", fitBondOver[0])
                 + "     H/H Bonds: " + (int)fitBondOver[1]
                 + "     Overlaps: " + (int)fitBondOver[2];
         int labelWidth = metrics.stringWidth(label);
