@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +9,15 @@ public class Main {
     public static void main(String[] args) {
 
         int[] protein = new int[]{1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1};
-        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 100, 500);
+        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 100, 1_000);
         ga.simulateGenerations();
+        try {
+            VideoCreator.createVideo("./visualization/video.mp4", GeneticAlgorithm.imageSeriesPath, 100);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-//        ProteinDrawer pdraw = new ProteinDrawer("./visualization/individual/", "image.png");
+//        ProteinDrawer pdraw = new ProteinDrawer("./visualization/individual/", "image.jpg");
 //
 //
 //        int[] isHydrophobic =       {0, 0, 0, 1, 0, 1, 1, 0, 0}; // 0 = no | 1 = yes

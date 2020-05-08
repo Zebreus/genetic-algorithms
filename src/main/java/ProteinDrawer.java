@@ -25,22 +25,28 @@ public class ProteinDrawer {
     int pixelsPerCell = 40;
     int margin = pixelsPerCell * 2;
     int outline = 2;
-    Font font = new Font("Sans-Serif", Font.PLAIN, 15);
-    Color imageBackground = new Color(255, 255, 255);
-    Color imageConnection = new Color(0, 0, 0);
-    Color imageOutline = new Color(0, 0, 0);
-    Color imageHydrophobic = new Color(205, 0, 0);
-    Color imageHydrophilic = new Color(0, 0, 255);
-    Color imageMixed = new Color(205, 0, 205);
-    Color imageAminoText = new Color(180, 180, 180);
-    Color imageText = new Color(0,0,0);
+    public static final Font font = new Font("Sans-Serif", Font.PLAIN, 15);
+    public static final Color imageBackground = new Color(255, 255, 255);
+    public static final Color imageConnection = new Color(0, 0, 0);
+    public static final Color imageOutline = new Color(0, 0, 0);
+    public static final Color imageHydrophobic = new Color(205, 0, 0);
+    public static final Color imageHydrophilic = new Color(0, 0, 255);
+    public static final Color imageMixed = new Color(205, 0, 205);
+    public static final Color imageAminoText = new Color(180, 180, 180);
+    public static final Color imageText = new Color(0,0,0);
+
+    public static int maxHeight;
+    public static int maxWidth;
 
     public ProteinDrawer(String folder, String filename) {
         this.folder = folder;
         this.filename = filename;
+
+        maxHeight = 0;
+        maxWidth = 0;
     }
 
-    public void drawProteinToFile(ArrayList<Vertex> vertexListOriginal, double[] fitBondOver) {
+    public void drawProteinToFile(ArrayList<Vertex> vertexListOriginal, double[] fitBondOver, int gen) {
         // Copy VertexList to be able to manipulate it
         ArrayList<Vertex> vertexList = deepCopyVertexList(vertexListOriginal);
 
@@ -48,6 +54,13 @@ public class ProteinDrawer {
 
         int height = (cellArray.length * pixelsPerCell) + margin * 2;
         int width = (cellArray[0].length * pixelsPerCell) + margin * 2;
+
+        if (height > maxHeight) {
+            maxHeight = height;
+        }
+        if (width > maxWidth) {
+            maxWidth = width;
+        }
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = image.createGraphics();
@@ -123,7 +136,8 @@ public class ProteinDrawer {
         }
 
         g2.setColor(imageText);
-        String label = "Fitness: " + String.format("%.4f", fitBondOver[0])
+        String label = "Gen: " + gen
+                + "     Fitness: " + String.format("%.4f", fitBondOver[0])
                 + "     H/H Bonds: " + (int)fitBondOver[1]
                 + "     Overlaps: " + (int)fitBondOver[2];
         int labelWidth = metrics.stringWidth(label);
@@ -134,7 +148,7 @@ public class ProteinDrawer {
         if (!new File(folder).exists()) new File(folder).mkdirs();
 
         try {
-            ImageIO.write(image, "png", new File(folder + File.separator + filename));
+            ImageIO.write(image, "jpg", new File(folder + File.separator + filename));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(0);

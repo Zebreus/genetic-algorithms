@@ -6,8 +6,10 @@ import java.util.Random;
 
 public class GeneticAlgorithm {
 
+    public static String imageSeriesPath = "./visualization/series";
+
     Random rand = new Random();
-    ProteinDrawer pdraw = new ProteinDrawer("./visualization/series", "image.png");
+    ProteinDrawer pdraw = new ProteinDrawer(imageSeriesPath, "image.jpg");
     String logfile;
     int populationSize;
     int totalGenerations;
@@ -40,7 +42,7 @@ public class GeneticAlgorithm {
         this.mutationDecline = 0.001; // Decline in mutation probablility with generations -> ex with 0.05: 2nd 0.95, 3rd 0.9025, 4th 0.857
 
         // Clear log file
-        String content = "";
+        String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
         try {
             Files.write(Paths.get(logfile), content.getBytes());
 
@@ -77,6 +79,7 @@ public class GeneticAlgorithm {
 
     private int evaluateGeneration(int gen) {
         // Evaluate current generation
+// DEBUG
         System.out.println("Generation " + gen + ":");
 
         double bestFitness = 0;
@@ -91,8 +94,8 @@ public class GeneticAlgorithm {
                 bestIndex = i;
             }
         }
-        pdraw.setFilename("gen_" + gen + ".png");
-        pdraw.drawProteinToFile(population[bestIndex].getVertexList(), population[bestIndex].calculateFitness(true));
+        pdraw.setFilename(String.format("gen_%05d.jpg",gen));
+        pdraw.drawProteinToFile(population[bestIndex].getVertexList(), population[bestIndex].calculateFitness(true), gen);
 
         // Save the overall best
         if (bestFitness > overallBestFitness) {
@@ -102,7 +105,7 @@ public class GeneticAlgorithm {
 
         double averageFitness = totalFitness / populationSize;
         double[] fitBondOverBest = overallBest.calculateFitness(false);
-        String log = String.format("%d \t %.4f \t %.4f \t %.4f \t %d \t %d \n",
+        String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
                 gen, averageFitness, bestFitness, fitBondOverBest[0], (int)fitBondOverBest[1], (int)fitBondOverBest[2]);
 
         try {
