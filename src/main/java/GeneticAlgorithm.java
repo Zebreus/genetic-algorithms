@@ -86,6 +86,8 @@ public class GeneticAlgorithm {
             mutateGeneration(mutationChance, mutationAttemptsPerCanidate);
             mutationChance *= (1 - mutationDecline); // Lower mutation rate with generation
 
+            System.out.printf("CrossoverChance: %.4f    MutationChance: %.4f\n", crossoverChance, mutationChance);
+
             System.out.println();
         }
         evaluateGeneration(totalGenerations-1);
