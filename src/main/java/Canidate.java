@@ -103,6 +103,25 @@ public class Canidate {
         this.vertexList = constructVertexes();
     }
 
+    public void crossover(Canidate partner, int crossoverPlace) {
+        // Save this gene for a moment while skipping the part that stays
+        int[] originalDirections = new int[outgoingDirection.length];
+        for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
+            originalDirections[i] = outgoingDirection[i];
+        }
+
+        // Edit these directions
+        for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
+            outgoingDirection[i] = partner.outgoingDirection[i];
+        }
+
+        // Edit partners directions
+        for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
+            partner.outgoingDirection[i] = originalDirections[i];
+        }
+
+    }
+
     @Override
     public String toString() {
         return "Canidate{" +

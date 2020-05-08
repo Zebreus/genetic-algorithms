@@ -25,6 +25,9 @@ public class GeneticAlgorithm {
 
     double mutationChance;
     double mutationDecline;
+    int mutationAttemptsPerCanidate;
+    double crossoverChance;
+    double crossoverDecline;
 
     // Initialize with protein
     public GeneticAlgorithm (String logfile, int[] protein, int pop, int gens) {
@@ -40,6 +43,9 @@ public class GeneticAlgorithm {
         this.overallBestFitness = 0;
         this.mutationChance = 1.0; // Guaranteed mutation in the first generation
         this.mutationDecline = 0.001; // Decline in mutation probablility with generations -> ex with 0.05: 2nd 0.95, 3rd 0.9025, 4th 0.857
+        this.mutationAttemptsPerCanidate = 1;
+        this.crossoverChance = 0.2;
+        this.crossoverDecline = 0.05;
 
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
@@ -70,8 +76,13 @@ public class GeneticAlgorithm {
         for (int gen = 0; gen < totalGenerations-1; gen++) {
             int bestIndex = evaluateGeneration(gen);
             population = pickSurvivors(bestIndex);
-            mutateGeneration(mutationChance, 1);
-            mutationChance *= (1 - mutationDecline);
+
+            crossoverGeneration(crossoverChance);
+            crossoverChance *= (1 - crossoverDecline);
+
+            mutateGeneration(mutationChance, mutationAttemptsPerCanidate);
+            mutationChance *= (1 - mutationDecline); // Lower mutation rate with generation
+
             System.out.println();
         }
         evaluateGeneration(totalGenerations-1);
@@ -94,7 +105,7 @@ public class GeneticAlgorithm {
                 bestIndex = i;
             }
         }
-        pdraw.setFilename(String.format("gen_%05d.jpg",gen));
+        pdraw.setFilename(String.format("gen_%07d.jpg",gen));
         pdraw.drawProteinToFile(population[bestIndex].getVertexList(), population[bestIndex].calculateFitness(true), gen);
 
         // Save the overall best
@@ -147,6 +158,17 @@ public class GeneticAlgorithm {
                     int mutationPlace = rand.nextInt(isHydrophobic.length);
                     population[i].mutateDir(mutationPlace, rand.nextInt(4));
                 }
+            }
+        }
+    }
+
+    private void crossoverGeneration(double crossoverChance) {
+        // Crossover (simple but maybe not very elegant implementation)
+        for (int i = 0; i < populationSize; i++) {
+            if (crossoverChance > rand.nextDouble()) {
+                int crossoverPartner = rand.nextInt(populationSize);
+                int crossoverPlace = rand.nextInt(isHydrophobic.length);
+                population[i].crossover(population[crossoverPartner], crossoverPlace);
             }
         }
     }
