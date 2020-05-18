@@ -1,20 +1,31 @@
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 public class Main {
 
     public static void main(String[] args) {
 
-//        int[] protein = new int[]{1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1};
-        int[] protein = new int[]{1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,1,0,1,0,1,0,1,0,1,1};
-        GeneticAlgorithm ga = new GeneticAlgorithm("log.txt", protein, 300, 1_000); // Do NOT go OVER 1_000_000 generations, as the filenames don't play nice then
-        ga.simulateGenerations();
+        String propertyPath = "./src/main/resources/genetic.properties";
+
 
         try {
-            VideoCreator.createVideo("./visualization/video.mp4", GeneticAlgorithm.imageSeriesPath, 100);
+            Properties properties = new Properties();
+            BufferedInputStream stream = new BufferedInputStream(new FileInputStream(propertyPath));
+            properties.load(stream);
+            stream.close();
+
+//          int[] protein = new int[]{1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1};
+            int[] protein = new int[]{1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,1,0,1,0,1,0,1,0,1,1};
+            GeneticAlgorithm ga = new GeneticAlgorithm(properties, protein);
+            ga.simulateGenerations();
+
+            VideoCreator.createVideo(properties);
         } catch (IOException e) {
             e.printStackTrace();
         }

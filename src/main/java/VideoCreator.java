@@ -5,10 +5,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Properties;
 import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.media.MediaLocator;
-
 
 public class VideoCreator{
 
@@ -26,7 +26,7 @@ public class VideoCreator{
         }
     };
 
-    public static int[] resizeImages(String imagesPath) throws IOException {
+    private static int[] resizeImages(String imagesPath) throws IOException {
         dir = new File(imagesPath);
         int[] widthHeight = new int[2];
 
@@ -75,7 +75,10 @@ public class VideoCreator{
     }
 
     // Main function
-    public static void createVideo(String videoPathAndFile, String imagesPath, int imgInterval) throws IOException {
+    public static void createVideo(Properties properties) throws IOException {
+        String imagesPath = properties.getProperty("imageSequencePath");
+        String videoPathAndFile = properties.getProperty("videoPathAndFile");
+        int imgInterval = Integer.parseInt(properties.getProperty("imgInterval"));
         dir = new File(imagesPath);
 
         int[] widthHeight = VideoCreator.resizeImages(imagesPath);
@@ -98,7 +101,7 @@ public class VideoCreator{
     public static void makeVideo(String fileName, Vector imgLst, int width, int height, int interval) throws MalformedURLException {
         JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
         MediaLocator oml;
-        if ((oml = imageToMovie.createMediaLocator(fileName)) == null) {
+        if ((oml = JpegImagesToMovie.createMediaLocator(fileName)) == null) {
             System.err.println("Cannot build media locator from: " + fileName);
             System.exit(0);
         }

@@ -2,14 +2,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Properties;
 import java.util.Random;
 
 public class GeneticAlgorithm {
 
-    public static String imageSeriesPath = "./visualization/series";
+    Properties properties;
 
     Random rand = new Random();
-    ProteinDrawer pdraw = new ProteinDrawer(imageSeriesPath, "image.jpg");
+    ProteinDrawer pdraw;
     String logfile;
     int populationSize;
     int totalGenerations;
@@ -29,26 +30,19 @@ public class GeneticAlgorithm {
     double crossoverChance;
     double crossoverDecline;
 
-    int selectionVariant = 1; // 0 = Fitness Proportional | 1 = Tournament
-    int k = 5; // Number of selected Candidates to face off in a tournament selection
+    enum Selection {
+        proportional,
+        tournament
+    }
+
+    Selection selectionVariant;
+    int k; // Number of selected Candidates to face off in a tournament selection
 
     // Initialize with protein
-    public GeneticAlgorithm (String logfile, int[] protein, int pop, int gens) {
-        this.logfile = logfile;
+    public GeneticAlgorithm (Properties properties, int[] protein) {
+        this.properties = properties;
         this.isHydrophobic =  protein;
-        this.populationSize = pop;
-        this.totalGenerations = gens;
-
-        this.population = generateInitalPopulation();
-        this.totalFitness = 0;
-        this.fitness = new double[populationSize];
-
-        this.overallBestFitness = 0;
-        this.mutationChance = 1.0; // Guaranteed mutation in the first generation
-        this.mutationDecline = 0.001; // Decline in mutation probablility with generations -> ex with 0.05: 2nd 0.95, 3rd 0.9025, 4th 0.857
-        this.mutationAttemptsPerCanidate = 1;
-        this.crossoverChance = 0.2;
-        this.crossoverDecline = 0.01;
+        initializeProperties();
 
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
@@ -58,6 +52,39 @@ public class GeneticAlgorithm {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.population = generateInitalPopulation();
+        this.totalFitness = 0;
+        this.fitness = new double[populationSize];
+        this.overallBestFitness = 0;
+    }
+
+    private void initializeProperties() {
+        this.logfile = this.properties.getProperty("logfilePath");
+        this.populationSize = Integer.parseInt(this.properties.getProperty("populationSize"));
+        this.totalGenerations = Integer.parseInt(this.properties.getProperty("noGenerations"));
+
+        this.mutationChance = Double.parseDouble(this.properties.getProperty("mutationChance"));
+        this.mutationDecline = Double.parseDouble(this.properties.getProperty("mutationDecline"));
+        this.mutationAttemptsPerCanidate = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCanidate"));
+        this.crossoverChance = Double.parseDouble(this.properties.getProperty("crossoverChance"));
+        this.crossoverDecline = Double.parseDouble(this.properties.getProperty("crossoverDecline"));
+
+        this.k = Integer.parseInt(this.properties.getProperty("k"));
+
+        try {
+            if (this.properties.getProperty("selection").equals("proportional")) {
+                this.selectionVariant = Selection.proportional;
+            } else if (this.properties.getProperty("selection").equals("tournament")) {
+                this.selectionVariant = Selection.tournament;
+            } else {
+                    throw new Exception("Selection variant not found!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.pdraw = new ProteinDrawer(properties.getProperty("imageSequencePath"));
     }
 
     // Generate initial population
@@ -134,7 +161,7 @@ public class GeneticAlgorithm {
     }
 
     private Candidate[] pickSurvivors() {
-        if (selectionVariant == 0) {
+        if (selectionVariant.equals(Selection.proportional)) {
             return fitnessProportionalSelection();
         } else {
             return tournamentSelection();
@@ -169,7 +196,7 @@ public class GeneticAlgorithm {
 
         for (int i = 0; i < populationSize; i++) {
             tournamentScoreMax = 0;
-            for (int ik = 0; ik < k; ik++) {
+            for (int ik = 0; ik < this.k; ik++) {
                 int nextIndex = rand.nextInt(populationSize);
                 double nextScore = population[nextIndex].calculateFitness(false)[0]; // TODO: Save fitness in canidate to avoid recalculation every time
                 if (tournamentScoreMax < nextScore){

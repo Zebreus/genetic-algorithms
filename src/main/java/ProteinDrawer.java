@@ -38,9 +38,9 @@ public class ProteinDrawer {
     public static int maxHeight;
     public static int maxWidth;
 
-    public ProteinDrawer(String folder, String filename) {
+    public ProteinDrawer(String folder) {
         this.folder = folder;
-        this.filename = filename;
+        this.filename = "image.jpg"; // Default
 
         maxHeight = 0;
         maxWidth = 0;
