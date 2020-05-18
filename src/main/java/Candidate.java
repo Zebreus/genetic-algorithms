@@ -9,11 +9,18 @@ public class Candidate {
     int[] isHydrophobic;       // 0 = no | 1 = yes
     int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
     ArrayList<Vertex> vertexList;
+    double fitness;
+    int bonds;
+    int overlaps;
 
     public Candidate(int[] isH, int[] oD) {
         this.isHydrophobic = isH;
         this.outgoingDirection = oD;
         this.vertexList = constructVertexes();
+
+        this.fitness = -1d; // Not calculated yet
+        this.bonds = 0;
+        this.overlaps = 0;
     }
 
     private ArrayList<Vertex> constructVertexes() {
@@ -41,19 +48,26 @@ public class Candidate {
     }
 
     public double[] calculateFitness(boolean doOutput) {
-        double fitness = 0d;
+        if (this.fitness <= -1) { // Not calculated before
+            double fitness = 0d;
 
-        int hydrophobicBonds = calculateBonds();
-        int overlaps = calculateOverlaps();
+            int hydrophobicBonds = calculateBonds();
+            int overlaps = calculateOverlaps();
 
-        fitness =(double) (hydrophobicBonds * POINTS_PER_BOND) / (double) (overlaps + 1);
+            fitness =(double) (hydrophobicBonds * POINTS_PER_BOND) / (double) (overlaps + 1);
 
-        if (doOutput) {
-            System.out.println("The fitness is: " + fitness
-                    + " [hydrophobicBonds = " + hydrophobicBonds + " | overlaps = " + overlaps + "]");
+            this.fitness = fitness;
+            this.bonds = hydrophobicBonds;
+            this.overlaps = overlaps;
         }
 
-        return new double[]{fitness, hydrophobicBonds, overlaps};
+        if (doOutput) {
+            System.out.println("The fitness is: " + this.fitness
+                    + " [hydrophobicBonds = " + this.bonds + " | overlaps = " + this.overlaps + "]");
+        }
+
+        // Return cached values if this is not the first time the values are needed
+        return new double[]{this.fitness, this.bonds, this.overlaps};
     }
 
     public ArrayList<Vertex> getVertexList() {

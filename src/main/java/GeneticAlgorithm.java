@@ -198,7 +198,7 @@ public class GeneticAlgorithm {
             tournamentScoreMax = 0;
             for (int ik = 0; ik < this.k; ik++) {
                 int nextIndex = rand.nextInt(populationSize);
-                double nextScore = population[nextIndex].calculateFitness(false)[0]; // TODO: Save fitness in canidate to avoid recalculation every time
+                double nextScore = population[nextIndex].calculateFitness(false)[0];
                 if (tournamentScoreMax < nextScore){
                     tournamentScoreMax = nextScore;
                     tournamentChoosenIndex = nextIndex;
