@@ -4,8 +4,11 @@ import Enums.DirectionNESW;
 import InitialGenerationCreators.Curl;
 import Interfaces.InitialGenerationCreator;
 import Interfaces.Mutator;
+import Interfaces.Selector;
 import Mutators.Crossover;
 import Mutators.SinglePoint;
+import Selectors.FitnessProportional;
+import Selectors.Tournament;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,8 +24,6 @@ public class GeneticAlgorithm {
     Random rand = new Random();
     ProteinDrawer pdraw;
     String logfile;
-    int populationSize;
-    int totalGenerations;
 
     int[] isHydrophobic;
     Candidate[] population;
@@ -33,12 +34,17 @@ public class GeneticAlgorithm {
     double overallBestFitness;
     Candidate overallBest;
 
+    // TODO: Move to config object
+    int populationSize;
+    int totalGenerations;
     int mutationAttemptsPerCandidate;
     double mutationChance;
     double mutationMultiplier;
     int crossoverAttemptsPerCandidate;
     double crossoverChance;
     double crossoverMultiplier;
+    Selection selectionVariant;
+    int k; // Number of selected Candidates to face off in a tournament selection
 
     enum Selection {
         proportional,
@@ -47,9 +53,7 @@ public class GeneticAlgorithm {
 
     InitialGenerationCreator initialGenCreator;
     Mutator[] mutators;
-
-    Selection selectionVariant;
-    int k; // Number of selected Candidates to face off in a tournament selection
+    Selector selector;
 
     // Initialize with protein
     public GeneticAlgorithm (Properties properties, int[] protein) {
@@ -67,6 +71,9 @@ public class GeneticAlgorithm {
         this.mutators[1] = new Crossover<>(DirectionNESW.class, this.rand, this.crossoverAttemptsPerCandidate,
                 this.crossoverChance, this.crossoverMultiplier);
 
+//        this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
+        this.selector = new Tournament(this.rand, this.isHydrophobic, this.k);
+
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
         try {
@@ -82,6 +89,7 @@ public class GeneticAlgorithm {
         this.overallBestFitness = 0;
     }
 
+    // TODO: Move to config object
     private void initializeProperties() {
         this.logfile = this.properties.getProperty("logfilePath");
         this.populationSize = Integer.parseInt(this.properties.getProperty("populationSize"));
@@ -113,8 +121,8 @@ public class GeneticAlgorithm {
 
     public void simulateGenerations() {
         for (int gen = 0; gen < totalGenerations-1; gen++) {
-            evaluateGeneration(gen);
-            population = pickSurvivors();
+            this.evaluateGeneration(gen);
+            this.population = this.selector.selectNewPopulation(this.population, this.fitness, this.totalFitness);
 
             for (Mutator m : mutators) { // SinglePoint and Crossover
                 this.population = m.mutatePopulation(this.population);
@@ -131,87 +139,38 @@ public class GeneticAlgorithm {
 
         double bestFitness = 0;
         int bestIndex = 0;
-        totalFitness = 0;
-        for (int i = 0; i < populationSize; i++) {
-            fitness[i] = population[i].calculateFitness(false)[0];
-            totalFitness += fitness[i];
+        this.totalFitness = 0;
+        for (int i = 0; i < this.populationSize; i++) {
+            this.fitness[i] = this.population[i].calculateFitness(false)[0];
+            this.totalFitness += this.fitness[i];
 
-            if (fitness[i] > bestFitness) {
-                bestFitness = fitness[i];
+            if (this.fitness[i] > bestFitness) {
+                bestFitness = this.fitness[i];
                 bestIndex = i;
             }
         }
-        pdraw.setFilename(String.format("gen_%07d.jpg",gen));
-        pdraw.drawProteinToFile(population[bestIndex].getVertexList(), population[bestIndex].calculateFitness(true), gen);
+        this.pdraw.setFilename(String.format("gen_%07d.jpg",gen));
+        this.pdraw.drawProteinToFile(this.population[bestIndex].getVertexList(),
+                this.population[bestIndex].calculateFitness(true), gen);
 
         // Save the overall best
-        if (bestFitness >= overallBestFitness) {
-            overallBestFitness = bestFitness;
-            overallBest = new Candidate(this.isHydrophobic, population[bestIndex].getOutgoing());
+        if (bestFitness >= this.overallBestFitness) {
+            this.overallBestFitness = bestFitness;
+            this.overallBest = new Candidate(this.isHydrophobic, this.population[bestIndex].getOutgoing());
         }
 
-        double averageFitness = totalFitness / populationSize;
-        double[] fitBondOverBest = overallBest.calculateFitness(false);
+        double averageFitness = this.totalFitness / this.populationSize;
+        double[] fitBondOverBest = this.overallBest.calculateFitness(false);
         String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
                 gen, averageFitness, bestFitness, fitBondOverBest[0], (int)fitBondOverBest[1], (int)fitBondOverBest[2]);
 
         try {
-            Files.write(Paths.get(logfile), log.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(this.logfile), log.getBytes(), StandardOpenOption.APPEND);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return bestIndex;
-    }
-
-    private Candidate[] pickSurvivors() {
-        if (selectionVariant.equals(Selection.proportional)) {
-            return fitnessProportionalSelection();
-        } else {
-            return tournamentSelection();
-        }
-    }
-
-    private Candidate[] fitnessProportionalSelection() {
-        // Pick set for next generation
-        double[] proportionalFitness = new double[populationSize];
-        for (int i = 0; i < populationSize; i++) {
-            proportionalFitness[i] = fitness[i] / totalFitness;
-        }
-
-        Candidate[] newPopulation = new Candidate[populationSize];
-        for (int i = 0; i < populationSize; i++) {
-            double picked = rand.nextDouble();
-            int j = -1;
-            while (picked > 0) {
-                j++;
-                picked -= proportionalFitness[j];
-            }
-            newPopulation[i] = new Candidate(this.isHydrophobic, population[j].getOutgoing());
-        }
-
-        return newPopulation;
-    }
-
-    private Candidate[] tournamentSelection() {
-        Candidate[] newPopulation = new Candidate[populationSize];
-        double tournamentScoreMax = 0;
-        int tournamentChoosenIndex = 0;
-
-        for (int i = 0; i < populationSize; i++) {
-            tournamentScoreMax = 0;
-            for (int ik = 0; ik < this.k; ik++) {
-                int nextIndex = rand.nextInt(populationSize);
-                double nextScore = population[nextIndex].calculateFitness(false)[0];
-                if (tournamentScoreMax < nextScore){
-                    tournamentScoreMax = nextScore;
-                    tournamentChoosenIndex = nextIndex;
-                }
-            }
-            newPopulation[i] = new Candidate(this.isHydrophobic, population[tournamentChoosenIndex].getOutgoing());
-        }
-
-        return newPopulation;
     }
 }
