@@ -1,6 +1,7 @@
 package MainClasses;
 
 import Enums.DirectionNESW;
+import Enums.Selection;
 import InitialGenerationCreators.Curl;
 import Interfaces.InitialGenerationCreator;
 import Interfaces.Mutator;
@@ -19,12 +20,8 @@ import java.util.Properties;
 import java.util.Random;
 
 public class GeneticAlgorithm {
-
-    Properties properties;
-
     Random rand = new Random();
     ProteinDrawer pdraw;
-    String logfile;
 
     int[] isHydrophobic;
     Candidate[] population;
@@ -35,42 +32,24 @@ public class GeneticAlgorithm {
     double overallBestFitness;
     Candidate overallBest;
 
-    // TODO: Move to config object
-    int populationSize;
-    int totalGenerations;
-    int mutationAttemptsPerCandidate;
-    double mutationChance;
-    double mutationMultiplier;
-    int crossoverAttemptsPerCandidate;
-    double crossoverChance;
-    double crossoverMultiplier;
-    Selection selectionVariant;
-    int k; // Number of selected Candidates to face off in a tournament selection
-
-    enum Selection {
-        proportional,
-        tournament
-    }
-
     InitialGenerationCreator initialGenCreator;
     Mutator[] mutators;
     Selector selector;
 
     // Initialize with protein
-    public GeneticAlgorithm (Properties properties, int[] protein) {
-        this.properties = properties;
+    public GeneticAlgorithm (int[] protein) {
         this.isHydrophobic =  protein;
-        initializeProperties();
+        this.pdraw = new ProteinDrawer(Config.IMAGE_SEQUENCE_PATH);
 
 //        this.initialGenCreator = new RandomDirection<>(this.rand, DirectionNESW.class);
 //        this.initialGenCreator = new StraightLine();
         this.initialGenCreator = new Curl<>(DirectionNESW.class);
 
         this.mutators = new Mutator[2];
-        this.mutators[0] = new SinglePoint<>(DirectionNESW.class, this.rand, this.mutationAttemptsPerCandidate,
-                this.mutationChance, this.mutationMultiplier);
-        this.mutators[1] = new Crossover<>(DirectionNESW.class, this.rand, this.crossoverAttemptsPerCandidate,
-                this.crossoverChance, this.crossoverMultiplier);
+        this.mutators[0] = new SinglePoint<>(DirectionNESW.class, this.rand, Config.MUTATION_ATTEMPTS_PER_CANDIDATE,
+                Config.MUTATION_CHANCE, Config.MUTATION_MULTIPLIER);
+        this.mutators[1] = new Crossover<>(DirectionNESW.class, this.rand, Config.CROSSOVER_ATTEMPTS_PER_CANDIDATE,
+                Config.CROSSOVER_CHANCE, Config.CROSSOVER_MULTIPLIER);
 
 //        this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
 //        this.selector = new Tournament(this.rand, this.isHydrophobic, this.k);
@@ -79,50 +58,20 @@ public class GeneticAlgorithm {
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
         try {
-            Files.write(Paths.get(logfile), content.getBytes());
+            Files.write(Paths.get(Config.LOGFILE), content.getBytes());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        this.population = this.initialGenCreator.initializeDirections(this.populationSize, this.isHydrophobic);
+        this.population = this.initialGenCreator.initializeDirections(Config.POPULATION_SIZE, this.isHydrophobic);
         this.totalFitness = 0;
-        this.fitness = new double[populationSize];
+        this.fitness = new double[Config.POPULATION_SIZE];
         this.overallBestFitness = 0;
     }
 
-    // TODO: Move to config object
-    private void initializeProperties() {
-        this.logfile = this.properties.getProperty("logfilePath");
-        this.populationSize = Integer.parseInt(this.properties.getProperty("populationSize"));
-        this.totalGenerations = Integer.parseInt(this.properties.getProperty("noGenerations"));
-
-        this.mutationAttemptsPerCandidate = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCandidate"));
-        this.mutationChance = Double.parseDouble(this.properties.getProperty("mutationChance"));
-        this.mutationMultiplier = Double.parseDouble(this.properties.getProperty("mutationDecline"));
-        this.crossoverAttemptsPerCandidate = Integer.parseInt(this.properties.getProperty("crossoverAttemptsPerCandidate"));
-        this.crossoverChance = Double.parseDouble(this.properties.getProperty("crossoverChance"));
-        this.crossoverMultiplier = Double.parseDouble(this.properties.getProperty("crossoverDecline"));
-
-        this.k = Integer.parseInt(this.properties.getProperty("k"));
-
-        try {
-            if (this.properties.getProperty("selection").equals("proportional")) {
-                this.selectionVariant = Selection.proportional;
-            } else if (this.properties.getProperty("selection").equals("tournament")) {
-                this.selectionVariant = Selection.tournament;
-            } else {
-                    throw new Exception("Selection variant not found!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        this.pdraw = new ProteinDrawer(properties.getProperty("imageSequencePath"));
-    }
-
     public void simulateGenerations() {
-        for (int gen = 0; gen < totalGenerations-1; gen++) {
+        for (int gen = 0; gen < Config.TOTAL_GENERATIONS-1; gen++) {
             this.evaluateGeneration(gen);
             this.population = this.selector.selectNewPopulation(this.population, this.fitness, this.totalFitness);
 
@@ -132,7 +81,7 @@ public class GeneticAlgorithm {
 
             System.out.println();
         }
-        evaluateGeneration(totalGenerations-1);
+        evaluateGeneration(Config.TOTAL_GENERATIONS-1);
     }
 
     private int evaluateGeneration(int gen) {
@@ -142,7 +91,7 @@ public class GeneticAlgorithm {
         double bestFitness = 0;
         int bestIndex = 0;
         this.totalFitness = 0;
-        for (int i = 0; i < this.populationSize; i++) {
+        for (int i = 0; i < Config.POPULATION_SIZE; i++) {
             this.fitness[i] = this.population[i].calculateFitness(false)[0];
             this.totalFitness += this.fitness[i];
 
@@ -161,13 +110,13 @@ public class GeneticAlgorithm {
             this.overallBest = new Candidate(this.isHydrophobic, this.population[bestIndex].getOutgoing());
         }
 
-        double averageFitness = this.totalFitness / this.populationSize;
+        double averageFitness = this.totalFitness / Config.POPULATION_SIZE;
         double[] fitBondOverBest = this.overallBest.calculateFitness(false);
         String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
                 gen, averageFitness, bestFitness, fitBondOverBest[0], (int)fitBondOverBest[1], (int)fitBondOverBest[2]);
 
         try {
-            Files.write(Paths.get(this.logfile), log.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(Config.LOGFILE), log.getBytes(), StandardOpenOption.APPEND);
 
         } catch (IOException e) {
             e.printStackTrace();
