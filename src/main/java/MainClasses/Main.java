@@ -1,9 +1,8 @@
 package MainClasses;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
+import Visualization.VideoCreator;
+
 import java.io.IOException;
-import java.util.Properties;
 
 public class Main {
 

@@ -1,22 +1,19 @@
 package MainClasses;
 
 import Enums.DirectionNESW;
-import Enums.Selection;
 import InitialGenerationCreators.Curl;
 import Interfaces.InitialGenerationCreator;
 import Interfaces.Mutator;
 import Interfaces.Selector;
 import Mutators.Crossover;
 import Mutators.SinglePoint;
-import Selectors.FitnessProportional;
 import Selectors.OnlyBest;
-import Selectors.Tournament;
+import Visualization.ProteinDrawer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Properties;
 import java.util.Random;
 
 public class GeneticAlgorithm {

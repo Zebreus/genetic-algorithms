@@ -1,4 +1,6 @@
-package MainClasses;
+package Visualization;
+
+import MainClasses.Vertex;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
