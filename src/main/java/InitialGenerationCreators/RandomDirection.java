@@ -11,9 +11,9 @@ public class  RandomDirection<T extends Enum<?>> implements InitialGenerationCre
     Random rand;
     Class<T> possibleDirections;
 
-    public RandomDirection(Random rand, Class<T> possibleDirections) {
-        this.rand = rand;
+    public RandomDirection(Class<T> possibleDirections, Random rand) {
         this.possibleDirections = possibleDirections;
+        this.rand = rand;
     }
 
     @Override

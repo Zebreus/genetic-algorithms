@@ -2,9 +2,10 @@ package MainClasses;
 
 import Enums.DirectionNESW;
 import InitialGenerationCreators.Curl;
-import InitialGenerationCreators.RandomDirection;
-import InitialGenerationCreators.StraightLine;
 import Interfaces.InitialGenerationCreator;
+import Interfaces.Mutator;
+import Mutators.Crossover;
+import Mutators.SinglePoint;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,11 +33,12 @@ public class GeneticAlgorithm {
     double overallBestFitness;
     Candidate overallBest;
 
+    int mutationAttemptsPerCandidate;
     double mutationChance;
-    double mutationDecline;
-    int mutationAttemptsPerCanidate;
+    double mutationMultiplier;
+    int crossoverAttemptsPerCandidate;
     double crossoverChance;
-    double crossoverDecline;
+    double crossoverMultiplier;
 
     enum Selection {
         proportional,
@@ -44,19 +46,26 @@ public class GeneticAlgorithm {
     }
 
     InitialGenerationCreator initialGenCreator;
+    Mutator[] mutators;
 
     Selection selectionVariant;
     int k; // Number of selected Candidates to face off in a tournament selection
 
     // Initialize with protein
     public GeneticAlgorithm (Properties properties, int[] protein) {
-//        this.initialGenCreator = new RandomDirection(this.rand, DirectionNESW.class);
-//        this.initialGenCreator = new StraightLine();
-        this.initialGenCreator = new Curl(DirectionNESW.class);
-
         this.properties = properties;
         this.isHydrophobic =  protein;
         initializeProperties();
+
+//        this.initialGenCreator = new RandomDirection<>(this.rand, DirectionNESW.class);
+//        this.initialGenCreator = new StraightLine();
+        this.initialGenCreator = new Curl<>(DirectionNESW.class);
+
+        this.mutators = new Mutator[2];
+        this.mutators[0] = new SinglePoint<>(DirectionNESW.class, this.rand, this.mutationAttemptsPerCandidate,
+                this.mutationChance, this.mutationMultiplier);
+        this.mutators[1] = new Crossover<>(DirectionNESW.class, this.rand, this.crossoverAttemptsPerCandidate,
+                this.crossoverChance, this.crossoverMultiplier);
 
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
@@ -78,11 +87,12 @@ public class GeneticAlgorithm {
         this.populationSize = Integer.parseInt(this.properties.getProperty("populationSize"));
         this.totalGenerations = Integer.parseInt(this.properties.getProperty("noGenerations"));
 
+        this.mutationAttemptsPerCandidate = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCandidate"));
         this.mutationChance = Double.parseDouble(this.properties.getProperty("mutationChance"));
-        this.mutationDecline = Double.parseDouble(this.properties.getProperty("mutationDecline"));
-        this.mutationAttemptsPerCanidate = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCanidate"));
+        this.mutationMultiplier = Double.parseDouble(this.properties.getProperty("mutationDecline"));
+        this.crossoverAttemptsPerCandidate = Integer.parseInt(this.properties.getProperty("crossoverAttemptsPerCandidate"));
         this.crossoverChance = Double.parseDouble(this.properties.getProperty("crossoverChance"));
-        this.crossoverDecline = Double.parseDouble(this.properties.getProperty("crossoverDecline"));
+        this.crossoverMultiplier = Double.parseDouble(this.properties.getProperty("crossoverDecline"));
 
         this.k = Integer.parseInt(this.properties.getProperty("k"));
 
@@ -106,13 +116,9 @@ public class GeneticAlgorithm {
             evaluateGeneration(gen);
             population = pickSurvivors();
 
-            crossoverGeneration(crossoverChance);
-            crossoverChance *= (1 - crossoverDecline);
-
-            mutateGeneration(mutationChance, mutationAttemptsPerCanidate);
-            mutationChance *= (1 - mutationDecline); // Lower mutation rate with generation
-
-            System.out.printf("CrossoverChance: %.4f    MutationChance: %.4f\n", crossoverChance, mutationChance);
+            for (Mutator m : mutators) { // SinglePoint and Crossover
+                this.population = m.mutatePopulation(this.population);
+            }
 
             System.out.println();
         }
@@ -207,28 +213,5 @@ public class GeneticAlgorithm {
         }
 
         return newPopulation;
-    }
-
-    private void mutateGeneration(double mutationChance, int mutationAttemptsPerCanidate) {
-        // Mutate
-        for (int i = 0; i < populationSize; i++) {
-            for (int j = 0; j < mutationAttemptsPerCanidate; j++) {
-                if (mutationChance > rand.nextDouble()) {
-                    int mutationPlace = rand.nextInt(isHydrophobic.length);
-                    population[i].mutateDir(mutationPlace, rand.nextInt(4));
-                }
-            }
-        }
-    }
-
-    private void crossoverGeneration(double crossoverChance) {
-        // Crossover (simple but maybe not very elegant implementation)
-        for (int i = 0; i < populationSize; i++) {
-            if (crossoverChance > rand.nextDouble()) {
-                int crossoverPartner = rand.nextInt(populationSize);
-                int crossoverPlace = rand.nextInt(isHydrophobic.length);
-                population[i].crossover(population[crossoverPartner], crossoverPlace);
-            }
-        }
     }
 }
