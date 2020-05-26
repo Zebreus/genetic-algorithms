@@ -29,7 +29,7 @@ public class Tournament implements Selector {
             tournamentScoreMax = 0;
             for (int ik = 0; ik < this.k; ik++) {
                 int nextIndex = rand.nextInt(populationSize);
-                double nextScore = fitness[nextIndex]; //population[nextIndex].calculateFitness(false)[0];
+                double nextScore = fitness[nextIndex];
                 if (tournamentScoreMax < nextScore){
                     tournamentScoreMax = nextScore;
                     tournamentChoosenIndex = nextIndex;

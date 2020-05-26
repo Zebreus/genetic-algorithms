@@ -8,6 +8,7 @@ import Interfaces.Selector;
 import Mutators.Crossover;
 import Mutators.SinglePoint;
 import Selectors.FitnessProportional;
+import Selectors.OnlyBest;
 import Selectors.Tournament;
 
 import java.io.IOException;
@@ -72,7 +73,8 @@ public class GeneticAlgorithm {
                 this.crossoverChance, this.crossoverMultiplier);
 
 //        this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
-        this.selector = new Tournament(this.rand, this.isHydrophobic, this.k);
+//        this.selector = new Tournament(this.rand, this.isHydrophobic, this.k);
+        this.selector = new OnlyBest(this.isHydrophobic);
 
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
