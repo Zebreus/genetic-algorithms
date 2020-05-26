@@ -1,11 +1,9 @@
+package MainClasses;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 
 public class Main {
 
@@ -30,7 +28,7 @@ public class Main {
             e.printStackTrace();
         }
 
-//        ProteinDrawer pdraw = new ProteinDrawer("./visualization/individual/", "image.jpg");
+//        MainClasses.ProteinDrawer pdraw = new MainClasses.ProteinDrawer("./visualization/individual/", "image.jpg");
 //
 //
 //        int[] isHydrophobic =       {0, 0, 0, 1, 0, 1, 1, 0, 0}; // 0 = no | 1 = yes

@@ -1,3 +1,11 @@
+package MainClasses;
+
+import Enums.DirectionNESW;
+import InitialGenerationCreators.Curl;
+import InitialGenerationCreators.RandomDirection;
+import InitialGenerationCreators.StraightLine;
+import Interfaces.InitialGenerationCreator;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,11 +43,17 @@ public class GeneticAlgorithm {
         tournament
     }
 
+    InitialGenerationCreator initialGenCreator;
+
     Selection selectionVariant;
     int k; // Number of selected Candidates to face off in a tournament selection
 
     // Initialize with protein
     public GeneticAlgorithm (Properties properties, int[] protein) {
+//        this.initialGenCreator = new RandomDirection(this.rand, DirectionNESW.class);
+//        this.initialGenCreator = new StraightLine();
+        this.initialGenCreator = new Curl(DirectionNESW.class);
+
         this.properties = properties;
         this.isHydrophobic =  protein;
         initializeProperties();
@@ -53,7 +67,7 @@ public class GeneticAlgorithm {
             e.printStackTrace();
         }
 
-        this.population = generateInitalPopulation();
+        this.population = this.initialGenCreator.initializeDirections(this.populationSize, this.isHydrophobic);
         this.totalFitness = 0;
         this.fitness = new double[populationSize];
         this.overallBestFitness = 0;
@@ -85,21 +99,6 @@ public class GeneticAlgorithm {
         }
 
         this.pdraw = new ProteinDrawer(properties.getProperty("imageSequencePath"));
-    }
-
-    // Generate initial population
-    private Candidate[] generateInitalPopulation() {
-        Candidate[] population = new Candidate[populationSize];
-
-        for (int i = 0; i < populationSize; i++) {
-            int[] canidateDirections = new int[isHydrophobic.length];
-            for (int j = 0; j < isHydrophobic.length; j++) {
-                canidateDirections[j] = rand.nextInt(4);
-            }
-            population[i] = new Candidate(isHydrophobic, canidateDirections);
-        }
-
-        return population;
     }
 
     public void simulateGenerations() {
@@ -140,7 +139,7 @@ public class GeneticAlgorithm {
         pdraw.drawProteinToFile(population[bestIndex].getVertexList(), population[bestIndex].calculateFitness(true), gen);
 
         // Save the overall best
-        if (bestFitness > overallBestFitness) {
+        if (bestFitness >= overallBestFitness) {
             overallBestFitness = bestFitness;
             overallBest = new Candidate(this.isHydrophobic, population[bestIndex].getOutgoing());
         }

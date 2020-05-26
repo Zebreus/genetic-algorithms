@@ -1,3 +1,5 @@
+package MainClasses;
+
 // Helper class representing a single amino acid
 class Vertex {
     int x;

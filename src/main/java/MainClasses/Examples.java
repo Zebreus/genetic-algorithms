@@ -1,4 +1,4 @@
-
+package MainClasses;
 // benchmark sequences for the 2d HP model
 // 0 = hydrophil, "white"
 // 1 = hydrophob, "black"

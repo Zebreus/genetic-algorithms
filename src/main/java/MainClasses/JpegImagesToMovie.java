@@ -1,5 +1,5 @@
-/*
- * @(#)JpegImagesToMovie.java   1.3 01/03/13
+package MainClasses;/*
+ * @(#)MainClasses.JpegImagesToMovie.java   1.3 01/03/13
  * Copyright (c) 1999-2001 Sun Microsystems, Inc. All Rights Reserved.
  * Sun grants you ("Licensee") a non-exclusive, royalty free, license to use,
  * modify and redistribute this software in source and binary code form,
@@ -324,7 +324,7 @@ public class JpegImagesToMovie implements ControllerListener, DataSinkListener {
         System.exit(0);
     }
 
-    JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
+    MainClasses.JpegImagesToMovie imageToMovie = new MainClasses.JpegImagesToMovie();
     imageToMovie.doIt(width, height, frameRate, inputFiles, oml);
 
     System.exit(0);
@@ -332,7 +332,7 @@ public class JpegImagesToMovie implements ControllerListener, DataSinkListener {
 
     static void prUsage() {
         System.err
-                .println("Usage: java JpegImagesToMovie -w <width> -h <height> -f <frame rate> -o <output URL> <input JPEG file 1> <input JPEG file 2> ...");
+                .println("Usage: java MainClasses.JpegImagesToMovie -w <width> -h <height> -f <frame rate> -o <output URL> <input JPEG file 1> <input JPEG file 2> ...");
         System.exit(-1);
     }
 

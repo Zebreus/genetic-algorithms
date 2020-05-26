@@ -1,5 +1,6 @@
+package MainClasses;
+
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -12,6 +13,7 @@ import javax.media.MediaLocator;
 
 public class VideoCreator{
 
+    private static final int MAXIMUM_SIZE = 3000;
     public static File dir = new File("./visualization/series"); // Default
     public static final String[] extensions = new String[]{"jpg", "png"};
     public static final FilenameFilter imageFilter = new FilenameFilter() {
@@ -32,8 +34,8 @@ public class VideoCreator{
 
         if (dir.isDirectory()) {
             // reads input images and determines maximum required size
-            int maxHeight = ProteinDrawer.maxWidth;
-            int maxWidth = ProteinDrawer.maxHeight;
+            int maxHeight = ProteinDrawer.maxHeight;
+            int maxWidth = ProteinDrawer.maxWidth;
 
             if (maxHeight <= 0 || maxWidth <= 0) {
                 int counter = 1;
@@ -46,6 +48,14 @@ public class VideoCreator{
                         maxWidth = inputImage.getWidth();
                     }
                 }
+            }
+
+            // Needed because video is not playable with bigger sizes, mostly a concern for straight line initialization
+            if (maxWidth > MAXIMUM_SIZE) {
+                maxWidth = MAXIMUM_SIZE;
+            }
+            if (maxHeight > MAXIMUM_SIZE) {
+                maxHeight = MAXIMUM_SIZE;
             }
 
             widthHeight[0] = maxWidth;
@@ -74,7 +84,7 @@ public class VideoCreator{
         return widthHeight;
     }
 
-    // Main function
+    // MainClasses.Main function
     public static void createVideo(Properties properties) throws IOException {
         String imagesPath = properties.getProperty("imageSequencePath");
         String videoPathAndFile = properties.getProperty("videoPathAndFile");
