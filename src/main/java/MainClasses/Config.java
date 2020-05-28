@@ -64,6 +64,8 @@ public class Config {
                 SELECTION_VARIANT = Selection.Proportional;
             } else if (this.properties.getProperty("selection").equals("tournament")) {
                 SELECTION_VARIANT = Selection.Tournament;
+            } else if (this.properties.getProperty("selection").equals("onlybest")) {
+                SELECTION_VARIANT = Selection.Tournament;
             } else {
                 throw new Exception("Selection variant not found!");
             }

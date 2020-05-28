@@ -14,5 +14,14 @@ public class Examples {
 	public static final String SEQ48 = "001001100110000011111111110000001100110010011111";
 	public static final String SEQ50 = "11010101011110100010001000010001000101111010101011";
 
+	public static int[] convertStringToIntArray(String seq) {
+		int[] protein = new int[seq.length()];
+
+		for (int i = 0; i < seq.length(); i++) {
+			protein[i] = Integer.parseInt(String.valueOf(seq.charAt(i)));
+		}
+
+		return protein;
+	}
 }
 

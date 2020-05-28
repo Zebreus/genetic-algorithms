@@ -11,8 +11,7 @@ public class Main {
         String propertyPath = "./src/main/resources/genetic.properties";
         Config config = new Config (propertyPath);
 
-//      int[] protein = new int[]{1,0,1,0,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1};
-        int[] protein = new int[]{1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,1,0,1,0,1,0,1,0,1,1};
+        int[] protein = Examples.convertStringToIntArray(Examples.SEQ50);
         GeneticAlgorithm ga = new GeneticAlgorithm(protein);
         ga.simulateGenerations();
 
