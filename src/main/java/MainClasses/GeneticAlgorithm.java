@@ -1,12 +1,16 @@
 package MainClasses;
 
-import Enums.DirectionNESW;
+import Enums.*;
 import Evaluators.EvaluatorNESW;
 import InitialGenerationCreators.Curl;
+import InitialGenerationCreators.RandomDirection;
+import InitialGenerationCreators.StraightLine;
 import Interfaces.*;
 import Mutators.Crossover;
 import Mutators.SinglePoint;
+import Selectors.FitnessProportional;
 import Selectors.OnlyBest;
+import Selectors.Tournament;
 import Visualization.Visualizers.VisualizerNESWtoConsole;
 import Visualization.Visualizers.VisualizerNESWtoFile;
 
@@ -17,8 +21,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Random;
 
 public class GeneticAlgorithm {
-    Random rand = new Random();
-    Visualizer visualizer;
+    Random rand;
 
     int[] isHydrophobic;
     Candidate[] population;
@@ -32,32 +35,86 @@ public class GeneticAlgorithm {
     InitialGenerationCreator initialGenCreator;
     Mutator[] mutators;
     Selector selector;
-
     Evaluator evaluator;
+    Visualizer[] visualizers;
 
     // Initialize with protein
     public GeneticAlgorithm (int[] protein) {
         this.isHydrophobic =  protein;
-//        this.visualizer = new VisualizerNESWtoConsole();
-        this.visualizer = new VisualizerNESWtoFile(Config.IMAGE_SEQUENCE_PATH);
 
-//        this.initialGenCreator = new RandomDirection<>(this.rand, DirectionNESW.class);
-//        this.initialGenCreator = new StraightLine();
-        this.initialGenCreator = new Curl<>(DirectionNESW.class);
+        this.initializeSettings();
+        this.clearLog();
 
-        this.mutators = new Mutator[2];
-        this.mutators[0] = new SinglePoint<>(DirectionNESW.class, this.rand, Config.MUTATION_ATTEMPTS_PER_CANDIDATE,
-                Config.MUTATION_CHANCE, Config.MUTATION_MULTIPLIER);
-        this.mutators[1] = new Crossover<>(DirectionNESW.class, this.rand, Config.CROSSOVER_ATTEMPTS_PER_CANDIDATE,
-                Config.CROSSOVER_CHANCE, Config.CROSSOVER_MULTIPLIER);
+        this.population = this.initialGenCreator.initializeDirections(Config.POPULATION_SIZE, this.isHydrophobic);
+        this.totalFitness = 0;
+        this.fitness = new double[Config.POPULATION_SIZE];
+        this.overallBestFitness = 0;
+    }
 
-//        this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
-//        this.selector = new Tournament(this.rand, this.isHydrophobic, this.k);
-        this.selector = new OnlyBest(this.isHydrophobic);
+    private void initializeSettings() {
+        if (Config.SEED != -1) {
+            this.rand = new Random(Config.SEED);
+        } else {
+            this.rand = new Random();
+        }
 
-        this.evaluator = new EvaluatorNESW(Config.POINTS_PER_BOND);
+        // Settings that are dependant on encoding
+        if (Config.ENCODING_VARIANT.equals("NESW")) {
+            int nullCount = 0;
+            for (int i = 0; i < Config.VISUALIZERS.length; i++) {
+                if (!Config.VISUALIZERS[i].equals(VisualizerMethods.Console)
+                        && !Config.VISUALIZERS[i].equals(VisualizerMethods.Image)) {
+                    nullCount++;
+                }
+            }
+            this.visualizers = new Visualizer[Config.VISUALIZERS.length - nullCount];
+            int j = 0;
+            for (VisualizerMethods vm : Config.VISUALIZERS) {
+                if (vm.equals(VisualizerMethods.Console)) {
+                    this.visualizers[j] = new VisualizerNESWtoConsole();
+                    j++;
+                } else if (vm.equals(VisualizerMethods.Image)) {
+                    this.visualizers[j] = new VisualizerNESWtoFile(Config.IMAGE_SEQUENCE_PATH);
+                    j++;
+                }
+            }
 
-        // Clear log file
+            if (Config.INITIALIZATION_METHOD.equals(InitializationMethods.Curl)) {
+                this.initialGenCreator = new Curl<>(DirectionNESW.class);
+            } else if (Config.INITIALIZATION_METHOD.equals(InitializationMethods.Straight)) {
+                this.initialGenCreator = new StraightLine();
+            } else if (Config.INITIALIZATION_METHOD.equals(InitializationMethods.Random)) {
+                this.initialGenCreator = new RandomDirection<>(DirectionNESW.class, this.rand);
+            }
+
+            this.mutators = new Mutator[Config.MUTATOR_METHODS.length];
+            for (int i = 0; i < Config.MUTATOR_METHODS.length; i++) {
+                if (Config.MUTATOR_METHODS[i].equals(MutatorMethods.SinglePoint)) {
+                    this.mutators[i] = new SinglePoint<>(DirectionNESW.class, this.rand,
+                            Config.MUTATION_ATTEMPTS_PER_CANDIDATE, Config.MUTATION_CHANCE, Config.MUTATION_MULTIPLIER);
+
+                } else if (Config.MUTATOR_METHODS[i].equals(MutatorMethods.Crossover)) {
+                    this.mutators[i] = new Crossover<>(DirectionNESW.class, this.rand,
+                            Config.CROSSOVER_ATTEMPTS_PER_CANDIDATE, Config.CROSSOVER_CHANCE, Config.CROSSOVER_MULTIPLIER);
+                }
+            }
+
+            this.evaluator = new EvaluatorNESW(Config.POINTS_PER_BOND);
+
+        } else {
+            // TODO: initialization for FRL settings
+        }
+
+        if (Config.SELECTION_METHOD.equals(SelectionMethods.Proportional)) {
+            this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
+        } else if (Config.SELECTION_METHOD.equals(SelectionMethods.Tournament)) {
+            this.selector = new Tournament(this.rand, this.isHydrophobic, Config.K);
+        } else if (Config.SELECTION_METHOD.equals(SelectionMethods.OnlyBest)) {
+            this.selector = new OnlyBest(this.isHydrophobic);
+        }
+    }
+
+    private void clearLog() {
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
         try {
             Files.write(Paths.get(Config.LOGFILE), content.getBytes());
@@ -65,11 +122,6 @@ public class GeneticAlgorithm {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        this.population = this.initialGenCreator.initializeDirections(Config.POPULATION_SIZE, this.isHydrophobic);
-        this.totalFitness = 0;
-        this.fitness = new double[Config.POPULATION_SIZE];
-        this.overallBestFitness = 0;
     }
 
     public void simulateGenerations() {
@@ -105,8 +157,10 @@ public class GeneticAlgorithm {
         int bonds = this.evaluator.evaluateBonds(this.population[bestIndex]);
         int overlaps = this.evaluator.evaluateOverlaps(this.population[bestIndex]);
 
-        this.visualizer.setFilename(String.format("gen_%07d.jpg",gen));
-        this.visualizer.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
+        for (Visualizer v : this.visualizers) {
+            v.setFilename(String.format("gen_%07d.jpg", gen));
+            v.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
+        }
 
         System.out.println("The fitness is: " + bestFitness
                     + " [hydrophobicBonds = " + bonds + " | overlaps = " + overlaps + "]");
@@ -135,10 +189,22 @@ public class GeneticAlgorithm {
     }
 
     public int getMaxH() {
-        return this.visualizer.getMaxH();
+        int maxHAcrossVisualiszators = 0;
+        for (Visualizer v : visualizers) {
+            if (maxHAcrossVisualiszators < v.getMaxH()) {
+                maxHAcrossVisualiszators = v.getMaxH();
+            }
+        }
+        return maxHAcrossVisualiszators;
     }
 
     public int getMaxW() {
-        return  this.visualizer.getMaxH();
+        int maxWAcrossVisualiszators = 0;
+        for (Visualizer v : visualizers) {
+            if (maxWAcrossVisualiszators < v.getMaxW()) {
+                maxWAcrossVisualiszators = v.getMaxW();
+            }
+        }
+        return maxWAcrossVisualiszators;
     }
 }

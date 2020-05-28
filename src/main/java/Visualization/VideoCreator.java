@@ -87,27 +87,29 @@ public class VideoCreator{
     }
 
     // MainClasses.Main function
-    public static void createVideo(Properties properties, int maxH, int maxW) throws IOException {
-        String imagesPath = properties.getProperty("imageSequencePath");
-        String videoPathAndFile = properties.getProperty("videoPathAndFile");
-        int imgInterval = Integer.parseInt(properties.getProperty("imgInterval"));
-        dir = new File(imagesPath);
+    public static void createVideo(String imagesPath, String videoPathAndFile,
+                                   int imgInterval, int maxH, int maxW) {
+        try {
+            dir = new File(imagesPath);
 
-        int[] widthHeight = VideoCreator.resizeImages(imagesPath, maxH, maxW);
+            int[] widthHeight = VideoCreator.resizeImages(imagesPath, maxH, maxW);
 
-        File file = new File(videoPathAndFile);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        Vector<String> imgLst = new Vector<>();
-        if (dir.isDirectory()) {
-            int counter = 1;
-            for (final File f : dir.listFiles(imageFilter)) {
-                imgLst.add(f.getAbsolutePath());
-
+            File file = new File(videoPathAndFile);
+            if (!file.exists()) {
+                file.createNewFile();
             }
+            Vector<String> imgLst = new Vector<>();
+            if (dir.isDirectory()) {
+                int counter = 1;
+                for (final File f : dir.listFiles(imageFilter)) {
+                    imgLst.add(f.getAbsolutePath());
+
+                }
+            }
+            makeVideo("file:\\" + file.getAbsolutePath(), imgLst, widthHeight[0], widthHeight[1], imgInterval);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        makeVideo("file:\\" + file.getAbsolutePath(), imgLst, widthHeight[0], widthHeight[1], imgInterval);
     }
 
     public static void makeVideo(String fileName, Vector imgLst, int width, int height, int interval) throws MalformedURLException {

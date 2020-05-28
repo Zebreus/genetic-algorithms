@@ -1,6 +1,6 @@
 package Enums;
 
-public enum Selection {
+public enum SelectionMethods {
     Proportional,
     Tournament,
     OnlyBest

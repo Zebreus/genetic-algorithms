@@ -1,6 +1,9 @@
 package MainClasses;
 
-import Enums.Selection;
+import Enums.InitializationMethods;
+import Enums.MutatorMethods;
+import Enums.SelectionMethods;
+import Enums.VisualizerMethods;
 
 import java.awt.*;
 import java.io.BufferedInputStream;
@@ -13,18 +16,33 @@ public class Config {
     String propertyPath;
     Properties properties;
 
-    static String LOGFILE;
+    static String ENCODING_VARIANT;
+    static int SEED;
+
+
     static int POPULATION_SIZE;
     static int TOTAL_GENERATIONS;
+    static InitializationMethods INITIALIZATION_METHOD;
+    static SelectionMethods SELECTION_METHOD;
+    static int K; // Number of selected Candidates to face off in a tournament selection
+    static MutatorMethods[] MUTATOR_METHODS;
+    static int POINTS_PER_BOND; // Points per hydrophobic bond, default Evaluator will work the same with any value
+
     static int MUTATION_ATTEMPTS_PER_CANDIDATE;
     static double MUTATION_CHANCE;
     static double MUTATION_MULTIPLIER;
     static int CROSSOVER_ATTEMPTS_PER_CANDIDATE;
     static double CROSSOVER_CHANCE;
     static double CROSSOVER_MULTIPLIER;
-    static Selection SELECTION_VARIANT;
-    static int K; // Number of selected Candidates to face off in a tournament selection
+
+    static String LOGFILE;
+    static VisualizerMethods[] VISUALIZERS;
     static String IMAGE_SEQUENCE_PATH;
+    static String VIDEO_PATH_AND_FILE;
+    static int IMAGE_INTERVAL;
+    static double IMAGE_INTERVAL_DECLINE;
+    static int IMAGE_INTERVAL_MIN;
+    static boolean ZOOM;
 
     // For images
     public static final Font font = new Font("Sans-Serif", Font.PLAIN, 15);
@@ -47,9 +65,6 @@ public class Config {
     public static final String consoleConnectionVertical = " | ";
     public static final String consoleConnectionHorizontal = "---";
 
-    // Points per hydrophobic bond
-    static int POINTS_PER_BOND;
-
     public Config(String propertyPath) {
         this.propertyPath = propertyPath;
         this.properties = this.readProperties();
@@ -71,35 +86,76 @@ public class Config {
     }
 
     private void initializeProperties() {
-        LOGFILE = this.properties.getProperty("logfilePath");
+
+        // Basic Initialization settings
+        ENCODING_VARIANT = this.properties.getProperty("encodingVatiant");
+        SEED = Integer.parseInt(this.properties.getProperty("seed"));
+
+
+        // Algorithm settings
         POPULATION_SIZE = Integer.parseInt(this.properties.getProperty("populationSize"));
         TOTAL_GENERATIONS = Integer.parseInt(this.properties.getProperty("noGenerations"));
 
-        MUTATION_ATTEMPTS_PER_CANDIDATE = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCandidate"));
-        MUTATION_CHANCE = Double.parseDouble(this.properties.getProperty("mutationChance"));
-        MUTATION_MULTIPLIER = Double.parseDouble(this.properties.getProperty("mutationDecline"));
-        CROSSOVER_ATTEMPTS_PER_CANDIDATE = Integer.parseInt(this.properties.getProperty("crossoverAttemptsPerCandidate"));
-        CROSSOVER_CHANCE = Double.parseDouble(this.properties.getProperty("crossoverChance"));
-        CROSSOVER_MULTIPLIER = Double.parseDouble(this.properties.getProperty("crossoverDecline"));
+        if (this.properties.getProperty("initializationMethod").equals("curl")) {
+            INITIALIZATION_METHOD = InitializationMethods.Curl;
+        } else if (this.properties.getProperty("initializationMethod").equals("straight")) {
+            INITIALIZATION_METHOD = InitializationMethods.Straight;
+        }else if (this.properties.getProperty("initializationMethod").equals("random")) {
+            INITIALIZATION_METHOD = InitializationMethods.Random;
+        }
+
+        if (this.properties.getProperty("selectionMethod").equals("proportional")) {
+            SELECTION_METHOD = SelectionMethods.Proportional;
+        } else if (this.properties.getProperty("selectionMethod").equals("tournament")) {
+            SELECTION_METHOD = SelectionMethods.Tournament;
+        } else if (this.properties.getProperty("selectionMethod").equals("onlybest")) {
+            SELECTION_METHOD = SelectionMethods.OnlyBest;
+        }
 
         K = Integer.parseInt(this.properties.getProperty("k"));
 
-        try {
-            if (this.properties.getProperty("selection").equals("proportional")) {
-                SELECTION_VARIANT = Selection.Proportional;
-            } else if (this.properties.getProperty("selection").equals("tournament")) {
-                SELECTION_VARIANT = Selection.Tournament;
-            } else if (this.properties.getProperty("selection").equals("onlybest")) {
-                SELECTION_VARIANT = Selection.Tournament;
-            } else {
-                throw new Exception("Selection variant not found!");
+        String[] mutatorsToUse = this.properties.getProperty("mutatorMethods").split(",");
+        MUTATOR_METHODS = new MutatorMethods[mutatorsToUse.length];
+        for (int i = 0; i < mutatorsToUse.length; i++) {
+            if (mutatorsToUse[i].equals("singlePoint")) {
+                MUTATOR_METHODS[i] = MutatorMethods.SinglePoint;
+            } else if (mutatorsToUse[i].equals("crossover")) {
+                MUTATOR_METHODS[i] = MutatorMethods.Crossover;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        IMAGE_SEQUENCE_PATH = properties.getProperty("imageSequencePath");
         POINTS_PER_BOND = Integer.parseInt(this.properties.getProperty("pointsPerBond"));
+
+        // Mutation settings
+        MUTATION_ATTEMPTS_PER_CANDIDATE = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCandidate"));
+        MUTATION_CHANCE = Double.parseDouble(this.properties.getProperty("mutationChance"));
+        MUTATION_MULTIPLIER = Double.parseDouble(this.properties.getProperty("mutationMultiplier"));
+        CROSSOVER_ATTEMPTS_PER_CANDIDATE = Integer.parseInt(this.properties.getProperty("crossoverAttemptsPerCandidate"));
+        CROSSOVER_CHANCE = Double.parseDouble(this.properties.getProperty("crossoverChance"));
+        CROSSOVER_MULTIPLIER = Double.parseDouble(this.properties.getProperty("crossoverMultiplier"));
+
+
+        // Output settings
+        LOGFILE = this.properties.getProperty("logfilePath");
+
+        String[] visualizersToUse = this.properties.getProperty("visualizerType").split(",");
+        VISUALIZERS = new VisualizerMethods[visualizersToUse.length];
+        for (int i = 0; i < visualizersToUse.length; i++) {
+            if (visualizersToUse[i].equals("console")) {
+                VISUALIZERS[i] = VisualizerMethods.Console;
+            } else if (visualizersToUse[i].equals("image")) {
+                VISUALIZERS[i] = VisualizerMethods.Image;
+            } else if (visualizersToUse[i].equals("video")) {
+                VISUALIZERS[i] = VisualizerMethods.Video;
+            }
+        }
+
+        IMAGE_SEQUENCE_PATH = this.properties.getProperty("imageSequencePath");
+        VIDEO_PATH_AND_FILE = this.properties.getProperty("videoPathAndFile");
+        IMAGE_INTERVAL = Integer.parseInt(this.properties.getProperty("imgInterval"));
+        IMAGE_INTERVAL_DECLINE = Double.parseDouble(this.properties.getProperty("imgIntervalDecline"));
+        IMAGE_INTERVAL_MIN = Integer.parseInt(this.properties.getProperty("imgIntervalMin"));
+        ZOOM = this.properties.getProperty("zoom").equals("true");
     }
 
     public Properties getProperties() {
