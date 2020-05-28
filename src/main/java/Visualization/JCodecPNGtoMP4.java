@@ -64,13 +64,13 @@ public class JCodecPNGtoMP4 {
         });
     }
 
-    static void generateVideoBySequenceImages(File videoFile, String pathImages, String imageExt, int fps) throws Exception {
+    static void generateVideoBySequenceImages(File videoFile, String pathImages, String imageExt,
+                                              int fps, int imgToFpsIncrease, int maxFps) throws Exception {
         SeekableByteChannel out = null;
         try {
             out = NIOUtils.writableFileChannel(videoFile.getCanonicalPath());
 
-            // for Android use: AndroidSequenceEncoder
-            AWTSequenceEncoder encoder = new AWTSequenceEncoder(out, Rational.R(fps, 1));
+            AWTSequenceEncoder encoder = new AWTSequenceEncoder(out, Rational.R(maxFps, 1));;
 
             Path directoryPath = Paths.get(new File(pathImages).toURI());
 
@@ -86,16 +86,32 @@ public class JCodecPNGtoMP4 {
 
                 sortByNumber(files);
 
+                int numberImagesWithSameFps = imgToFpsIncrease;
+                System.out.println();
                 for (File img : files) {
-                    System.err.println("Encoding image " + img.getName());
-                    // Generate the image, for Android use Bitmap
+                    if (numberImagesWithSameFps <= 0) {
+                        if (fps < maxFps) {
+                            fps++; // Increase fps
+                            numberImagesWithSameFps = imgToFpsIncrease - 1;
+                        }
+                    } else {
+                        numberImagesWithSameFps--; // Countdown to increase
+                    }
+
+                    System.err.println("Encoding image " + img.getName() + " [" + fps + " fps]");
+                    // Generate the image
                     BufferedImage image = ImageIO.read(img);
-                    // Encode the image
-                    encoder.encodeImage(image);
+                    // Encode the image often enough to fit current fps
+                    for (int i = 0; i < Math.round((float) maxFps / fps); i++) {
+                        encoder.encodeImage(image);
+                    }
+                    // Finalize the encoding, i.e. clear the buffers, write the header, etc.
                 }
             }
             // Finalize the encoding, i.e. clear the buffers, write the header, etc.
             encoder.finish();
+            System.err.println("Finished creating video: " + videoFile.getCanonicalPath());
+
         } finally {
             NIOUtils.closeQuietly(out);
         }

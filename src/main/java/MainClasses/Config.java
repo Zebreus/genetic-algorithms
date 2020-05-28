@@ -40,8 +40,8 @@ public class Config {
     static String IMAGE_SEQUENCE_PATH;
     static String VIDEO_PATH_AND_FILE;
     static int IMAGE_FPS;
-    static double IMAGE_FPS_DECLINE;
-    static int IMAGE_FPS_MIN;
+    static int IMAGES_TO_FPS_INCREASE;
+    static int IMAGE_FPS_MAX;
     static boolean ZOOM;
 
     // For images
@@ -153,8 +153,8 @@ public class Config {
         IMAGE_SEQUENCE_PATH = this.properties.getProperty("imageSequencePath");
         VIDEO_PATH_AND_FILE = this.properties.getProperty("videoPathAndFile");
         IMAGE_FPS = Integer.parseInt(this.properties.getProperty("imgFps"));
-        IMAGE_FPS_DECLINE = Double.parseDouble(this.properties.getProperty("imgFpsDecline"));
-        IMAGE_FPS_MIN = Integer.parseInt(this.properties.getProperty("imgFpsMax"));
+        IMAGES_TO_FPS_INCREASE = Integer.parseInt(this.properties.getProperty("imagesToFpsIncrease"));
+        IMAGE_FPS_MAX = Integer.parseInt(this.properties.getProperty("imgFpsMax"));
         ZOOM = this.properties.getProperty("zoom").equals("true");
     }
 

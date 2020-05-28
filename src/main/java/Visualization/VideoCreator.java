@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Vector;
 
 public class VideoCreator{
 
@@ -28,9 +26,10 @@ public class VideoCreator{
         }
     };
 
-    private static int[] resizeImages(String imagesPath, int maxH, int maxW) throws IOException {
+    private static void resizeImages(String imagesPath, int maxH, int maxW) throws IOException {
+        System.err.println("\nStarting image resizing");
+
         dir = new File(imagesPath);
-        int[] widthHeight = new int[2];
 
         if (dir.isDirectory()) {
             // reads input images and determines maximum required size
@@ -58,9 +57,6 @@ public class VideoCreator{
                 maxHeight = MAXIMUM_SIZE;
             }
 
-            widthHeight[0] = maxWidth;
-            widthHeight[1] = maxHeight;
-
             // Resizes all images
             for (final File f : dir.listFiles(imageFilter)) {
                 BufferedImage inputImage = ImageIO.read(f);
@@ -80,32 +76,25 @@ public class VideoCreator{
                 ImageIO.write(outputImage, "png", f);
             }
         }
-
-        return widthHeight;
     }
 
     // MainClasses.Main function
     public static void createVideo(String imagesPath, String videoPathAndFile,
-                                   int imgFps, int maxH, int maxW) {
+                                   int imgFps, int imgToFpsIncrease, int maxFps, int maxH, int maxW) {
         try {
-            int[] widthHeight = VideoCreator.resizeImages(imagesPath, maxH, maxW);
+            VideoCreator.resizeImages(imagesPath, maxH, maxW);
 
             File videoFile = new File(videoPathAndFile);
             if (!videoFile.exists()) {
                 videoFile.createNewFile();
             }
-            Vector<String> imgLst = new Vector<>();
 
-            makeVideo(videoFile, imagesPath, imgFps);
+            try {
+                JCodecPNGtoMP4.generateVideoBySequenceImages(videoFile, imagesPath, "png", imgFps, imgToFpsIncrease, maxFps);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void makeVideo(File videoFile, String imagesDir, int fps) throws MalformedURLException {
-        try {
-            JCodecPNGtoMP4.generateVideoBySequenceImages(videoFile, imagesDir, "png", fps);
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
