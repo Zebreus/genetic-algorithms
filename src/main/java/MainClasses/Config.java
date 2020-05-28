@@ -2,6 +2,7 @@ package MainClasses;
 
 import Enums.Selection;
 
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,6 +25,27 @@ public class Config {
     static Selection SELECTION_VARIANT;
     static int K; // Number of selected Candidates to face off in a tournament selection
     static String IMAGE_SEQUENCE_PATH;
+
+    // For images
+    public static final Font font = new Font("Sans-Serif", Font.PLAIN, 15);
+    public static final Color imageBackground = new Color(255, 255, 255);
+    public static final Color imageConnection = new Color(0, 0, 0);
+    public static final Color imageOutline = new Color(0, 0, 0);
+    public static final Color imageHydrophobic = new Color(205, 0, 0);
+    public static final Color imageHydrophilic = new Color(0, 0, 255);
+    public static final Color imageMixed = new Color(205, 0, 205);
+    public static final Color imageAminoText = new Color(0, 190, 190);
+    public static final Color imageText = new Color(0,0,0);
+
+    // For console output
+    public static final String consoleEmpty = "   ";
+    public static final String consoleHydrophobic = "(o)";
+    public static final String consoleHydrophilic = "(i)";
+    public static final String consoleHydrophobicMulti = "{o}";
+    public static final String consoleHydrophilicMulti = "{i}";
+    public static final String consoleMixed = "{z}";
+    public static final String consoleConnectionVertical = " | ";
+    public static final String consoleConnectionHorizontal = "---";
 
     // Points per hydrophobic bond
     static int POINTS_PER_BOND;

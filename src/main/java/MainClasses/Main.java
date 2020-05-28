@@ -15,8 +15,9 @@ public class Main {
         GeneticAlgorithm ga = new GeneticAlgorithm(protein);
         ga.simulateGenerations();
 
+//        if (Config.isVidoable && Config.doVideo)
         try {
-            VideoCreator.createVideo(config.getProperties());
+            VideoCreator.createVideo(config.getProperties(), ga.getMaxH(), ga.getMaxW());
         } catch (IOException e) {
             e.printStackTrace();
         }

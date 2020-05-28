@@ -3,14 +3,12 @@ package MainClasses;
 import Enums.DirectionNESW;
 import Evaluators.EvaluatorNESW;
 import InitialGenerationCreators.Curl;
-import Interfaces.Evaluator;
-import Interfaces.InitialGenerationCreator;
-import Interfaces.Mutator;
-import Interfaces.Selector;
+import Interfaces.*;
 import Mutators.Crossover;
 import Mutators.SinglePoint;
 import Selectors.OnlyBest;
-import Visualization.ProteinDrawer;
+import Visualization.Visualizers.VisualizerNESWtoConsole;
+import Visualization.Visualizers.VisualizerNESWtoFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +18,7 @@ import java.util.Random;
 
 public class GeneticAlgorithm {
     Random rand = new Random();
-    ProteinDrawer pdraw;
+    Visualizer visualizer;
 
     int[] isHydrophobic;
     Candidate[] population;
@@ -40,7 +38,8 @@ public class GeneticAlgorithm {
     // Initialize with protein
     public GeneticAlgorithm (int[] protein) {
         this.isHydrophobic =  protein;
-        this.pdraw = new ProteinDrawer(Config.IMAGE_SEQUENCE_PATH);
+//        this.visualizer = new VisualizerNESWtoConsole();
+        this.visualizer = new VisualizerNESWtoFile(Config.IMAGE_SEQUENCE_PATH);
 
 //        this.initialGenCreator = new RandomDirection<>(this.rand, DirectionNESW.class);
 //        this.initialGenCreator = new StraightLine();
@@ -106,8 +105,8 @@ public class GeneticAlgorithm {
         int bonds = this.evaluator.evaluateBonds(this.population[bestIndex]);
         int overlaps = this.evaluator.evaluateOverlaps(this.population[bestIndex]);
 
-        this.pdraw.setFilename(String.format("gen_%07d.jpg",gen));
-        this.pdraw.drawProteinToFile(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
+        this.visualizer.setFilename(String.format("gen_%07d.jpg",gen));
+        this.visualizer.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
 
         System.out.println("The fitness is: " + bestFitness
                     + " [hydrophobicBonds = " + bonds + " | overlaps = " + overlaps + "]");
@@ -133,5 +132,13 @@ public class GeneticAlgorithm {
         }
 
         return bestIndex;
+    }
+
+    public int getMaxH() {
+        return this.visualizer.getMaxH();
+    }
+
+    public int getMaxW() {
+        return  this.visualizer.getMaxH();
     }
 }

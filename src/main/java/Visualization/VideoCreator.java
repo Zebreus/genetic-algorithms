@@ -1,5 +1,7 @@
 package Visualization;
 
+import MainClasses.Config;
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,14 +30,14 @@ public class VideoCreator{
         }
     };
 
-    private static int[] resizeImages(String imagesPath) throws IOException {
+    private static int[] resizeImages(String imagesPath, int maxH, int maxW) throws IOException {
         dir = new File(imagesPath);
         int[] widthHeight = new int[2];
 
         if (dir.isDirectory()) {
             // reads input images and determines maximum required size
-            int maxHeight = ProteinDrawer.maxHeight;
-            int maxWidth = ProteinDrawer.maxWidth;
+            int maxHeight = maxH;
+            int maxWidth = maxW;
 
             if (maxHeight <= 0 || maxWidth <= 0) {
                 int counter = 1;
@@ -71,7 +73,7 @@ public class VideoCreator{
 
                 // draws input image to the top left corner
                 Graphics2D g2d = outputImage.createGraphics();
-                g2d.setColor(ProteinDrawer.imageBackground);
+                g2d.setColor(Config.imageBackground);
                 g2d.fillRect(0,0, maxWidth, maxHeight);
                 g2d.drawImage(inputImage, 0, 0, inputImage.getWidth(), inputImage.getHeight(), null);
                 g2d.dispose();
@@ -85,13 +87,13 @@ public class VideoCreator{
     }
 
     // MainClasses.Main function
-    public static void createVideo(Properties properties) throws IOException {
+    public static void createVideo(Properties properties, int maxH, int maxW) throws IOException {
         String imagesPath = properties.getProperty("imageSequencePath");
         String videoPathAndFile = properties.getProperty("videoPathAndFile");
         int imgInterval = Integer.parseInt(properties.getProperty("imgInterval"));
         dir = new File(imagesPath);
 
-        int[] widthHeight = VideoCreator.resizeImages(imagesPath);
+        int[] widthHeight = VideoCreator.resizeImages(imagesPath, maxH, maxW);
 
         File file = new File(videoPathAndFile);
         if (!file.exists()) {
