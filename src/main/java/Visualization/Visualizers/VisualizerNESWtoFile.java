@@ -28,7 +28,7 @@ public class VisualizerNESWtoFile implements Visualizer {
 
     public VisualizerNESWtoFile(String folder) {
         this.folder = folder;
-        this.filename = "image.jpg"; // Default
+        this.filename = "image.png"; // Default
 
         this.maxHeight = 0;
         this.maxWidth = 0;
@@ -136,7 +136,7 @@ public class VisualizerNESWtoFile implements Visualizer {
         if (!new File(folder).exists()) new File(folder).mkdirs();
 
         try {
-            ImageIO.write(image, "jpg", new File(folder + File.separator + filename));
+            ImageIO.write(image, "png", new File(folder + File.separator + filename));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(0);

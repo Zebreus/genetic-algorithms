@@ -28,5 +28,16 @@
             <artifactId>jmf</artifactId>
             <version>2.1.1e</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jcodec</groupId>
+            <artifactId>jcodec</artifactId>
+            <version>0.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jcodec</groupId>
+            <artifactId>jcodec-javase</artifactId>
+            <version>0.2.2</version>
+        </dependency>
     </dependencies>
 </project>

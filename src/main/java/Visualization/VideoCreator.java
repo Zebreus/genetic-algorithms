@@ -2,16 +2,14 @@ package Visualization;
 
 import MainClasses.Config;
 
-import java.awt.Graphics2D;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Properties;
 import java.util.Vector;
-import javax.imageio.ImageIO;
-import javax.media.MediaLocator;
 
 public class VideoCreator{
 
@@ -79,7 +77,7 @@ public class VideoCreator{
                 g2d.dispose();
 
                 // overwrites image
-                ImageIO.write(outputImage, "jpg", f);
+                ImageIO.write(outputImage, "png", f);
             }
         }
 
@@ -88,37 +86,27 @@ public class VideoCreator{
 
     // MainClasses.Main function
     public static void createVideo(String imagesPath, String videoPathAndFile,
-                                   int imgInterval, int maxH, int maxW) {
+                                   int imgFps, int maxH, int maxW) {
         try {
-            dir = new File(imagesPath);
-
             int[] widthHeight = VideoCreator.resizeImages(imagesPath, maxH, maxW);
 
-            File file = new File(videoPathAndFile);
-            if (!file.exists()) {
-                file.createNewFile();
+            File videoFile = new File(videoPathAndFile);
+            if (!videoFile.exists()) {
+                videoFile.createNewFile();
             }
             Vector<String> imgLst = new Vector<>();
-            if (dir.isDirectory()) {
-                int counter = 1;
-                for (final File f : dir.listFiles(imageFilter)) {
-                    imgLst.add(f.getAbsolutePath());
 
-                }
-            }
-            makeVideo("file:\\" + file.getAbsolutePath(), imgLst, widthHeight[0], widthHeight[1], imgInterval);
+            makeVideo(videoFile, imagesPath, imgFps);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void makeVideo(String fileName, Vector imgLst, int width, int height, int interval) throws MalformedURLException {
-        JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
-        MediaLocator oml;
-        if ((oml = JpegImagesToMovie.createMediaLocator(fileName)) == null) {
-            System.err.println("Cannot build media locator from: " + fileName);
-            System.exit(0);
+    public static void makeVideo(File videoFile, String imagesDir, int fps) throws MalformedURLException {
+        try {
+            JCodecPNGtoMP4.generateVideoBySequenceImages(videoFile, imagesDir, "png", fps);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        imageToMovie.doIt(width, height, (1000 / interval), imgLst, oml);
     }
 }

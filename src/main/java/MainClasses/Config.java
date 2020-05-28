@@ -39,9 +39,9 @@ public class Config {
     static VisualizerMethods[] VISUALIZERS;
     static String IMAGE_SEQUENCE_PATH;
     static String VIDEO_PATH_AND_FILE;
-    static int IMAGE_INTERVAL;
-    static double IMAGE_INTERVAL_DECLINE;
-    static int IMAGE_INTERVAL_MIN;
+    static int IMAGE_FPS;
+    static double IMAGE_FPS_DECLINE;
+    static int IMAGE_FPS_MIN;
     static boolean ZOOM;
 
     // For images
@@ -152,9 +152,9 @@ public class Config {
 
         IMAGE_SEQUENCE_PATH = this.properties.getProperty("imageSequencePath");
         VIDEO_PATH_AND_FILE = this.properties.getProperty("videoPathAndFile");
-        IMAGE_INTERVAL = Integer.parseInt(this.properties.getProperty("imgInterval"));
-        IMAGE_INTERVAL_DECLINE = Double.parseDouble(this.properties.getProperty("imgIntervalDecline"));
-        IMAGE_INTERVAL_MIN = Integer.parseInt(this.properties.getProperty("imgIntervalMin"));
+        IMAGE_FPS = Integer.parseInt(this.properties.getProperty("imgFps"));
+        IMAGE_FPS_DECLINE = Double.parseDouble(this.properties.getProperty("imgFpsDecline"));
+        IMAGE_FPS_MIN = Integer.parseInt(this.properties.getProperty("imgFpsMax"));
         ZOOM = this.properties.getProperty("zoom").equals("true");
     }
 

@@ -1,10 +1,8 @@
 package MainClasses;
 
 import Enums.VisualizerMethods;
-import Interfaces.Visualizer;
 import Visualization.VideoCreator;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class Main {
@@ -23,7 +21,7 @@ public class Main {
         boolean videoEnabled = Arrays.stream(Config.VISUALIZERS).anyMatch(VisualizerMethods.Video::equals);
         if (imagesRefreshed && videoEnabled){
             VideoCreator.createVideo(Config.IMAGE_SEQUENCE_PATH, Config.VIDEO_PATH_AND_FILE,
-                    Config.IMAGE_INTERVAL, ga.getMaxH(), ga.getMaxW());
+                    Config.IMAGE_FPS, ga.getMaxH(), ga.getMaxW());
         }
     }
 }

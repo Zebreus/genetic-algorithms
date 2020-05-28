@@ -158,7 +158,7 @@ public class GeneticAlgorithm {
         int overlaps = this.evaluator.evaluateOverlaps(this.population[bestIndex]);
 
         for (Visualizer v : this.visualizers) {
-            v.setFilename(String.format("gen_%07d.jpg", gen));
+            v.setFilename(String.format("gen_%d.png", gen));
             v.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
         }
 
