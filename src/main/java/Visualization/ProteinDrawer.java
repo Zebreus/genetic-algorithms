@@ -50,7 +50,7 @@ public class ProteinDrawer {
         maxWidth = 0;
     }
 
-    public void drawProteinToFile(ArrayList<Vertex> vertexListOriginal, double[] fitBondOver, int gen) {
+    public void drawProteinToFile(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
         // Copy VertexList to be able to manipulate it
         ArrayList<Vertex> vertexList = deepCopyVertexList(vertexListOriginal);
 
@@ -141,9 +141,9 @@ public class ProteinDrawer {
 
         g2.setColor(imageText);
         String label = "Gen: " + gen
-                + "     Fitness: " + String.format("%.4f", fitBondOver[0])
-                + "     H/H Bonds: " + (int)fitBondOver[1]
-                + "     Overlaps: " + (int)fitBondOver[2];
+                + "     Fitness: " + String.format("%.4f", fit)
+                + "     H/H Bonds: " + bond
+                + "     Overlaps: " + over;
         int labelWidth = metrics.stringWidth(label);
         int x = margin / 4;
         int y = margin / 4;

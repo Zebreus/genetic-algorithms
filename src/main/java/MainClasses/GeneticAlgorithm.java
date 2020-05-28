@@ -1,7 +1,9 @@
 package MainClasses;
 
 import Enums.DirectionNESW;
+import Evaluators.EvaluatorNESW;
 import InitialGenerationCreators.Curl;
+import Interfaces.Evaluator;
 import Interfaces.InitialGenerationCreator;
 import Interfaces.Mutator;
 import Interfaces.Selector;
@@ -33,6 +35,8 @@ public class GeneticAlgorithm {
     Mutator[] mutators;
     Selector selector;
 
+    Evaluator evaluator;
+
     // Initialize with protein
     public GeneticAlgorithm (int[] protein) {
         this.isHydrophobic =  protein;
@@ -51,6 +55,8 @@ public class GeneticAlgorithm {
 //        this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
 //        this.selector = new Tournament(this.rand, this.isHydrophobic, this.k);
         this.selector = new OnlyBest(this.isHydrophobic);
+
+        this.evaluator = new EvaluatorNESW(Config.POINTS_PER_BOND);
 
         // Clear log file
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
@@ -89,7 +95,7 @@ public class GeneticAlgorithm {
         int bestIndex = 0;
         this.totalFitness = 0;
         for (int i = 0; i < Config.POPULATION_SIZE; i++) {
-            this.fitness[i] = this.population[i].calculateFitness(false)[0];
+            this.fitness[i] = this.evaluator.evaluateFitness(this.population[i]);
             this.totalFitness += this.fitness[i];
 
             if (this.fitness[i] > bestFitness) {
@@ -97,9 +103,14 @@ public class GeneticAlgorithm {
                 bestIndex = i;
             }
         }
+        int bonds = this.evaluator.evaluateBonds(this.population[bestIndex]);
+        int overlaps = this.evaluator.evaluateOverlaps(this.population[bestIndex]);
+
         this.pdraw.setFilename(String.format("gen_%07d.jpg",gen));
-        this.pdraw.drawProteinToFile(this.population[bestIndex].getVertexList(),
-                this.population[bestIndex].calculateFitness(true), gen);
+        this.pdraw.drawProteinToFile(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
+
+        System.out.println("The fitness is: " + bestFitness
+                    + " [hydrophobicBonds = " + bonds + " | overlaps = " + overlaps + "]");
 
         // Save the overall best
         if (bestFitness >= this.overallBestFitness) {
@@ -108,9 +119,11 @@ public class GeneticAlgorithm {
         }
 
         double averageFitness = this.totalFitness / Config.POPULATION_SIZE;
-        double[] fitBondOverBest = this.overallBest.calculateFitness(false);
         String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
-                gen, averageFitness, bestFitness, fitBondOverBest[0], (int)fitBondOverBest[1], (int)fitBondOverBest[2]);
+                gen, averageFitness, bestFitness,
+                this.evaluator.evaluateFitness(overallBest),
+                this.evaluator.evaluateBonds(overallBest),
+                this.evaluator.evaluateOverlaps(overallBest));
 
         try {
             Files.write(Paths.get(Config.LOGFILE), log.getBytes(), StandardOpenOption.APPEND);

@@ -25,6 +25,9 @@ public class Config {
     static int K; // Number of selected Candidates to face off in a tournament selection
     static String IMAGE_SEQUENCE_PATH;
 
+    // Points per hydrophobic bond
+    static int POINTS_PER_BOND;
+
     public Config(String propertyPath) {
         this.propertyPath = propertyPath;
         this.properties = this.readProperties();
@@ -74,6 +77,7 @@ public class Config {
         }
 
         IMAGE_SEQUENCE_PATH = properties.getProperty("imageSequencePath");
+        POINTS_PER_BOND = Integer.parseInt(this.properties.getProperty("pointsPerBond"));
     }
 
     public Properties getProperties() {
