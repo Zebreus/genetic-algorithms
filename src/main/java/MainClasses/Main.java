@@ -12,7 +12,7 @@ public class Main {
         String propertyPath = "./src/main/resources/genetic.properties";
         Config config = new Config(propertyPath);
 
-        int[] protein = Examples.convertStringToIntArray(Examples.SEQ50);
+        int[] protein = Examples.convertStringToIntArray(Examples.SEQ36);
         GeneticAlgorithm ga = new GeneticAlgorithm(protein);
         ga.simulateGenerations();
 
@@ -21,7 +21,8 @@ public class Main {
         boolean videoEnabled = Arrays.asList(Config.VISUALIZERS).contains(VisualizerMethods.Video);
         if (imagesRefreshed && videoEnabled){
             VideoCreator.createVideo(Config.IMAGE_SEQUENCE_PATH, Config.VIDEO_PATH_AND_FILE,
-                    Config.IMAGE_FPS, Config.IMAGES_TO_FPS_INCREASE, Config.IMAGE_FPS_MAX, ga.getMaxH(), ga.getMaxW());
+                    Config.IMAGE_FPS, Config.IMAGES_TO_FPS_INCREASE, Config.IMAGE_FPS_MAX,
+                    ga.getMaxH(), ga.getMaxW(), Config.ZOOM);
         }
     }
 }

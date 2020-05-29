@@ -88,7 +88,7 @@ public class Config {
     private void initializeProperties() {
 
         // Basic Initialization settings
-        ENCODING_VARIANT = this.properties.getProperty("encodingVatiant");
+        ENCODING_VARIANT = this.properties.getProperty("encodingVariant");
         SEED = Integer.parseInt(this.properties.getProperty("seed"));
 
 
@@ -96,20 +96,28 @@ public class Config {
         POPULATION_SIZE = Integer.parseInt(this.properties.getProperty("populationSize"));
         TOTAL_GENERATIONS = Integer.parseInt(this.properties.getProperty("noGenerations"));
 
-        if (this.properties.getProperty("initializationMethod").equals("curl")) {
-            INITIALIZATION_METHOD = InitializationMethods.Curl;
-        } else if (this.properties.getProperty("initializationMethod").equals("straight")) {
-            INITIALIZATION_METHOD = InitializationMethods.Straight;
-        }else if (this.properties.getProperty("initializationMethod").equals("random")) {
-            INITIALIZATION_METHOD = InitializationMethods.Random;
+        switch (this.properties.getProperty("initializationMethod")) {
+            case "curl":
+                INITIALIZATION_METHOD = InitializationMethods.Curl;
+                break;
+            case "straight":
+                INITIALIZATION_METHOD = InitializationMethods.Straight;
+                break;
+            case "random":
+                INITIALIZATION_METHOD = InitializationMethods.Random;
+                break;
         }
 
-        if (this.properties.getProperty("selectionMethod").equals("proportional")) {
-            SELECTION_METHOD = SelectionMethods.Proportional;
-        } else if (this.properties.getProperty("selectionMethod").equals("tournament")) {
-            SELECTION_METHOD = SelectionMethods.Tournament;
-        } else if (this.properties.getProperty("selectionMethod").equals("onlybest")) {
-            SELECTION_METHOD = SelectionMethods.OnlyBest;
+        switch (this.properties.getProperty("selectionMethod")) {
+            case "proportional":
+                SELECTION_METHOD = SelectionMethods.Proportional;
+                break;
+            case "tournament":
+                SELECTION_METHOD = SelectionMethods.Tournament;
+                break;
+            case "onlybest":
+                SELECTION_METHOD = SelectionMethods.OnlyBest;
+                break;
         }
 
         K = Integer.parseInt(this.properties.getProperty("k"));
@@ -141,12 +149,16 @@ public class Config {
         String[] visualizersToUse = this.properties.getProperty("visualizerType").split(",");
         VISUALIZERS = new VisualizerMethods[visualizersToUse.length];
         for (int i = 0; i < visualizersToUse.length; i++) {
-            if (visualizersToUse[i].equals("console")) {
-                VISUALIZERS[i] = VisualizerMethods.Console;
-            } else if (visualizersToUse[i].equals("image")) {
-                VISUALIZERS[i] = VisualizerMethods.Image;
-            } else if (visualizersToUse[i].equals("video")) {
-                VISUALIZERS[i] = VisualizerMethods.Video;
+            switch (visualizersToUse[i]) {
+                case "console":
+                    VISUALIZERS[i] = VisualizerMethods.Console;
+                    break;
+                case "image":
+                    VISUALIZERS[i] = VisualizerMethods.Image;
+                    break;
+                case "video":
+                    VISUALIZERS[i] = VisualizerMethods.Video;
+                    break;
             }
         }
 

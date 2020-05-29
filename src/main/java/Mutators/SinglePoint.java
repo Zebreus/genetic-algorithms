@@ -33,7 +33,7 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
                 for (int j = 0; j < this.mutationAttemptsPerCandidate; j++) {
                     if (this.mutationChance > this.rand.nextDouble()) {
                         int mutationPlace = this.rand.nextInt(proteinLength);
-                        // TODO: Use the enums or get rid of them...
+                        // TODO: Use the enums or get rid of this hard coded 3 and 4...
                         if (this.isFRL) {
                             candidate.mutateDir(mutationPlace, this.rand.nextInt(3));
                         } else {

@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class JCodecPNGtoMP4 {
 
-    private static void sortByNumber(File[] files) {
+    static void sortByNumber(File[] files) {
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
@@ -70,14 +70,16 @@ public class JCodecPNGtoMP4 {
         try {
             out = NIOUtils.writableFileChannel(videoFile.getCanonicalPath());
 
-            AWTSequenceEncoder encoder = new AWTSequenceEncoder(out, Rational.R(maxFps, 1));;
+            AWTSequenceEncoder encoder = new AWTSequenceEncoder(out, Rational.R(maxFps, 1));
 
             Path directoryPath = Paths.get(new File(pathImages).toURI());
+
+            int encodedImages = 0;
 
             if (Files.isDirectory(directoryPath)) {
                 DirectoryStream<Path> stream = Files.newDirectoryStream(directoryPath, "*." + imageExt);
 
-                List<File> filesList = new ArrayList<File>();
+                List<File> filesList = new ArrayList<>();
                 for (Path path : stream) {
                     filesList.add(path.toFile());
                 }
@@ -98,12 +100,13 @@ public class JCodecPNGtoMP4 {
                         numberImagesWithSameFps--; // Countdown to increase
                     }
 
-                    System.err.println("Encoding image " + img.getName() + " [" + fps + " fps]");
+                    System.err.println("Encoding image " + img.getName() + " [at " + fps + " fps]");
                     // Generate the image
                     BufferedImage image = ImageIO.read(img);
                     // Encode the image often enough to fit current fps
                     for (int i = 0; i < Math.round((float) maxFps / fps); i++) {
                         encoder.encodeImage(image);
+                        encodedImages++;
                     }
                     // Finalize the encoding, i.e. clear the buffers, write the header, etc.
                 }
@@ -111,6 +114,8 @@ public class JCodecPNGtoMP4 {
             // Finalize the encoding, i.e. clear the buffers, write the header, etc.
             encoder.finish();
             System.err.println("Finished creating video: " + videoFile.getCanonicalPath());
+            double videoLenght = (double) encodedImages / maxFps;
+            System.out.printf("The final video is %.2f seconds long", videoLenght);
 
         } finally {
             NIOUtils.closeQuietly(out);
