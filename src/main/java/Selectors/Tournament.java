@@ -35,7 +35,7 @@ public class Tournament implements Selector {
                     tournamentChoosenIndex = nextIndex;
                 }
             }
-            newPopulation[i] = new Candidate(this.isHydrophobic, population[tournamentChoosenIndex].getOutgoing());
+            newPopulation[i] = new Candidate(population[tournamentChoosenIndex].getOutgoing());
         }
 
         return newPopulation;

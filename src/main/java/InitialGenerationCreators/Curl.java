@@ -14,19 +14,18 @@ public class Curl<T extends Enum<?>> implements InitialGenerationCreator {
     }
 
     @Override
-    public Candidate[] initializeDirections(int populationSize, int[] isHydrophobic) {
+    public Candidate[] initializeDirections(int populationSize, int sequenceLength) {
         Candidate[] population = new Candidate[populationSize];
-        int proteinLength = isHydrophobic.length;
 
         int[] candidateDirections;
         if (isFRLEncoding(possibleDirections) && populationSize > 0) {
-            candidateDirections = curlFRL(proteinLength);
+            candidateDirections = curlFRL(sequenceLength);
         } else {
-            candidateDirections = curlNESW(proteinLength);
+            candidateDirections = curlNESW(sequenceLength);
         }
 
         for (int i = 0; i < populationSize; i++) {
-            population[i] = new Candidate(isHydrophobic, candidateDirections);
+            population[i] = new Candidate(candidateDirections);
         }
 
         return population;

@@ -5,13 +5,11 @@ import java.util.Arrays;
 
 public class Candidate {
 
-    int[] isHydrophobic;       // 0 = no | 1 = yes
     public int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
     public ArrayList<Vertex> vertexList;
     public double fitness;
 
-    public Candidate(int[] isH, int[] oD) {
-        this.isHydrophobic = isH;
+    public Candidate(int[] oD) {
         this.outgoingDirection = oD;
         this.vertexList = constructVertexes();
 
@@ -23,9 +21,8 @@ public class Candidate {
         int currentX = 0;
         int currentY = 0;
 
-        for (int currentVertex = 0; currentVertex < isHydrophobic.length; currentVertex++) {
-            vertexList.add(new Vertex(currentX, currentY,
-                    isHydrophobic[currentVertex] == 1, outgoingDirection[currentVertex]));
+        for (int currentVertex = 0; currentVertex < outgoingDirection.length; currentVertex++) {
+            vertexList.add(new Vertex(currentX, currentY, outgoingDirection[currentVertex]));
 
             // Update position
             if (outgoingDirection[currentVertex] == 0) {

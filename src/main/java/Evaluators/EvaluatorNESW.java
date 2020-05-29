@@ -8,9 +8,11 @@ import MainClasses.Vertex;
 public class EvaluatorNESW implements Evaluator {
 
     final int POINTS_PER_BOND;
+    final int[] isHydrophobic;
 
-    public EvaluatorNESW(int pointsPerBond) {
+    public EvaluatorNESW(int pointsPerBond, int[] isHydrophobic) {
         this.POINTS_PER_BOND = pointsPerBond;
+        this.isHydrophobic = isHydrophobic;
     }
 
     @Override
@@ -36,10 +38,10 @@ public class EvaluatorNESW implements Evaluator {
         for (int i = 0; i < candidate.vertexList.size() - 2; i++) {
             Vertex toCompare = candidate.vertexList.get(i);
 
-            if (toCompare.isHydrophobic) {
+            if (isHydrophobic[i]==1) {
                 for (int j = i + 2; j < candidate.vertexList.size(); j++) {
                     Vertex vertex = candidate.vertexList.get(j);
-                    if (vertex.isHydrophobic) {
+                    if (isHydrophobic[j]==1) {
                         if (toCompare.neighbouringPosition(vertex)) {
                             bonds++;
                         }

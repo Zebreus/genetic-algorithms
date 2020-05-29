@@ -14,13 +14,13 @@ public interface Visualizer {
     static ArrayList<Vertex> deepCopyVertexList (List<Vertex> vertexListOriginal) {
         ArrayList<Vertex> vertexList = new ArrayList<>();
         for (Vertex v : vertexListOriginal) {
-            Vertex vNew = new Vertex(v.x, v.y, v.isHydrophobic, v.outgoingDirection);
+            Vertex vNew = new Vertex(v.x, v.y, v.outgoingDirection);
             vertexList.add(vNew);
         }
         return vertexList;
     }
 
-    static Cell[][] convertProteinTo2DArray(ArrayList<Vertex> vertexList) {
+    static Cell[][] convertProteinTo2DArray(ArrayList<Vertex> vertexList,  int[] isHydrophobic) {
         // Determine size
         int minX = 0;
         int maxX = 0;
@@ -61,7 +61,7 @@ public interface Visualizer {
 
         for (int i = 0; i < vertexList.size(); i++) {
             Vertex vertex = vertexList.get(i);
-            if (vertex.isHydrophobic) {
+            if (isHydrophobic[i]==1) {
                 cellArray[vertex.y][vertex.x].addState(State.Hydrophobic);
             } else {
                 cellArray[vertex.y][vertex.x].addState(State.Hydrophilic);

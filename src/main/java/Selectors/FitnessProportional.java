@@ -33,7 +33,7 @@ public class FitnessProportional implements Selector {
                 j++;
                 picked -= proportionalFitness[j];
             }
-            newPopulation[i] = new Candidate(this.isHydrophobic, population[j].getOutgoing());
+            newPopulation[i] = new Candidate(population[j].getOutgoing());
         }
 
         return newPopulation;

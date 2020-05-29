@@ -4,13 +4,11 @@ package MainClasses;
 public class Vertex {
     public int x;
     public int y;
-    public boolean isHydrophobic;
     public int outgoingDirection;
 
-    public Vertex(int x, int y, boolean isHydrophobic, int outgoingDirection) {
+    public Vertex(int x, int y, int outgoingDirection) {
         this.x = x;
         this.y = y;
-        this.isHydrophobic = isHydrophobic;
         this.outgoingDirection = outgoingDirection;
     }
 

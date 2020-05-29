@@ -45,7 +45,7 @@ public class GeneticAlgorithm {
         this.initializeSettings();
         this.clearLog();
 
-        this.population = this.initialGenCreator.initializeDirections(Config.POPULATION_SIZE, this.isHydrophobic);
+        this.population = this.initialGenCreator.initializeDirections(Config.POPULATION_SIZE, this.isHydrophobic.length);
         this.totalFitness = 0;
         this.fitness = new double[Config.POPULATION_SIZE];
         this.overallBestFitness = 0;
@@ -71,10 +71,10 @@ public class GeneticAlgorithm {
             int j = 0;
             for (VisualizerMethods vm : Config.VISUALIZERS) {
                 if (vm.equals(VisualizerMethods.Console)) {
-                    this.visualizers[j] = new VisualizerNESWtoConsole();
+                    this.visualizers[j] = new VisualizerNESWtoConsole(isHydrophobic);
                     j++;
                 } else if (vm.equals(VisualizerMethods.Image)) {
-                    this.visualizers[j] = new VisualizerNESWtoFile(Config.IMAGE_SEQUENCE_PATH);
+                    this.visualizers[j] = new VisualizerNESWtoFile(Config.IMAGE_SEQUENCE_PATH,isHydrophobic);
                     j++;
                 }
             }
@@ -99,7 +99,7 @@ public class GeneticAlgorithm {
                 }
             }
 
-            this.evaluator = new EvaluatorNESW(Config.POINTS_PER_BOND);
+            this.evaluator = new EvaluatorNESW(Config.POINTS_PER_BOND, isHydrophobic);
 
         } else {
             // TODO: initialization for FRL settings
@@ -154,29 +154,29 @@ public class GeneticAlgorithm {
                 bestIndex = i;
             }
         }
-        int bonds = this.evaluator.evaluateBonds(this.population[bestIndex]);
-        int overlaps = this.evaluator.evaluateOverlaps(this.population[bestIndex]);
 
         for (Visualizer v : this.visualizers) {
             v.setFilename(String.format("gen_%d.png", gen));
-            v.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, bonds, overlaps, gen);
+            //TODO Print real bond and overlap amount
+            v.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, -1, -1, gen);
         }
 
+        //TODO Print real bond and overlap amount
         System.out.println("The fitness is: " + bestFitness
-                    + " [hydrophobicBonds = " + bonds + " | overlaps = " + overlaps + "]");
+                    + " [hydrophobicBonds = " + -1 + " | overlaps = " + -1 + "]");
 
         // Save the overall best
         if (bestFitness >= this.overallBestFitness) {
             this.overallBestFitness = bestFitness;
-            this.overallBest = new Candidate(this.isHydrophobic, this.population[bestIndex].getOutgoing());
+            this.overallBest = new Candidate(this.population[bestIndex].getOutgoing());
         }
 
         double averageFitness = this.totalFitness / Config.POPULATION_SIZE;
         String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
                 gen, averageFitness, bestFitness,
                 this.evaluator.evaluateFitness(overallBest),
-                this.evaluator.evaluateBonds(overallBest),
-                this.evaluator.evaluateOverlaps(overallBest));
+                -1,
+                -1);
 
         try {
             Files.write(Paths.get(Config.LOGFILE), log.getBytes(), StandardOpenOption.APPEND);

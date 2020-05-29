@@ -17,17 +17,19 @@ public class VisualizerNESWtoConsole implements Visualizer {
 
     int maxHeight;
     int maxWidth;
+    final int[] isHydrophobic;
 
-    public VisualizerNESWtoConsole() {
+    public VisualizerNESWtoConsole(int[] isHydrophobic) {
         this.maxHeight = 0;
         this.maxWidth = 0;
+        this.isHydrophobic = isHydrophobic;
     }
 
     public void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
         // Copy VertexList to be able to manipulate it
         ArrayList<Vertex> vertexList = Visualizer.deepCopyVertexList(vertexListOriginal);
 
-        Cell[][] cellArray = Visualizer.convertProteinTo2DArray(vertexList);
+        Cell[][] cellArray = Visualizer.convertProteinTo2DArray(vertexList, isHydrophobic);
 
         for (int yIndex = cellArray.length-1; yIndex >= 0; yIndex--) {
             for (int xIndex = 0; xIndex < cellArray[0].length; xIndex++) {

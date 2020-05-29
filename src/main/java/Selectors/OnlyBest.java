@@ -31,7 +31,7 @@ public class OnlyBest implements Selector {
         int[] bestFolding = population[bestIndex].getOutgoing();
 
         for (int i = 0; i < populationSize; i++) {
-            newPopulation[i] = new Candidate(this.isHydrophobic, bestFolding);
+            newPopulation[i] = new Candidate(bestFolding);
         }
 
         return newPopulation;

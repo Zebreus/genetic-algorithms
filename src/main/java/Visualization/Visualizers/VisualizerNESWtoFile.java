@@ -25,20 +25,22 @@ public class VisualizerNESWtoFile implements Visualizer {
     int pixelsPerCell = 40;
     int margin = pixelsPerCell * 2;
     int outline = 2;
+    final int[] isHydrophobic;
 
-    public VisualizerNESWtoFile(String folder) {
+    public VisualizerNESWtoFile(String folder, int[] isHydrophobic) {
         this.folder = folder;
         this.filename = "image.png"; // Default
 
         this.maxHeight = 0;
         this.maxWidth = 0;
+        this.isHydrophobic = isHydrophobic;
     }
 
     public void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
         // Copy VertexList to be able to manipulate it
         ArrayList<Vertex> vertexList = Visualizer.deepCopyVertexList(vertexListOriginal);
 
-        Cell[][] cellArray = Visualizer.convertProteinTo2DArray(vertexList);
+        Cell[][] cellArray = Visualizer.convertProteinTo2DArray(vertexList, this.isHydrophobic);
 
         int height = (cellArray.length * pixelsPerCell) + margin * 2;
         int width = (cellArray[0].length * pixelsPerCell) + margin * 2;
