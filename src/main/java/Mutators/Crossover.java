@@ -35,7 +35,21 @@ public class Crossover<T extends Enum<?>> implements Mutator {
                     if (this.crossoverChance > this.rand.nextDouble()) {
                         int crossoverPartner = this.rand.nextInt(populationSize);
                         int crossoverPlace = this.rand.nextInt(proteinLength);
-                        candidate.crossover(population[crossoverPartner], crossoverPlace);
+
+                        int[] originalDirections = new int[candidate.outgoingDirection.length];
+                        for (int i = crossoverPlace; i < candidate.outgoingDirection.length; i++) {
+                            originalDirections[i] = candidate.outgoingDirection[i];
+                        }
+
+                        // Edit these directions
+                        for (int i = crossoverPlace; i < candidate.outgoingDirection.length; i++) {
+                            candidate.outgoingDirection[i] = population[crossoverPartner].outgoingDirection[i];
+                        }
+
+                        // Edit partners directions
+                        for (int i = crossoverPlace; i < candidate.outgoingDirection.length; i++) {
+                            population[crossoverPartner].outgoingDirection[i] = originalDirections[i];
+                        }
                     }
                 }
             }

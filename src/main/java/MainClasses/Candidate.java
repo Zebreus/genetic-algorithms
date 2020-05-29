@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class Candidate {
 
     int[] isHydrophobic;       // 0 = no | 1 = yes
-    int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
+    public int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
     public ArrayList<Vertex> vertexList;
     public double fitness;
 
@@ -18,7 +18,7 @@ public class Candidate {
         this.fitness = -1d; // Not calculated yet
     }
 
-    private ArrayList<Vertex> constructVertexes() {
+    public ArrayList<Vertex> constructVertexes() {
         ArrayList<Vertex> vertexList = new ArrayList<>();
         int currentX = 0;
         int currentY = 0;
@@ -44,30 +44,6 @@ public class Candidate {
 
     public ArrayList<Vertex> getVertexList() {
         return vertexList;
-    }
-
-    public void mutateDir(int mutationPlace, int mutation) {
-        outgoingDirection[mutationPlace] = mutation;
-        this.vertexList = constructVertexes();
-    }
-
-    public void crossover(Candidate partner, int crossoverPlace) {
-        // Save this gene for a moment while skipping the part that stays
-        int[] originalDirections = new int[outgoingDirection.length];
-        for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
-            originalDirections[i] = outgoingDirection[i];
-        }
-
-        // Edit these directions
-        for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
-            outgoingDirection[i] = partner.outgoingDirection[i];
-        }
-
-        // Edit partners directions
-        for (int i = crossoverPlace; i < outgoingDirection.length; i++) {
-            partner.outgoingDirection[i] = originalDirections[i];
-        }
-
     }
 
     @Override
