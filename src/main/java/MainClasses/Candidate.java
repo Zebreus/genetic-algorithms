@@ -9,8 +9,6 @@ public class Candidate {
     int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
     public ArrayList<Vertex> vertexList;
     public double fitness;
-    public int bonds;
-    public int overlaps;
 
     public Candidate(int[] isH, int[] oD) {
         this.isHydrophobic = isH;
@@ -18,8 +16,6 @@ public class Candidate {
         this.vertexList = constructVertexes();
 
         this.fitness = -1d; // Not calculated yet
-        this.bonds = -1;
-        this.overlaps = -1;
     }
 
     private ArrayList<Vertex> constructVertexes() {

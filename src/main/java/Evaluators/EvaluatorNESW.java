@@ -30,48 +30,40 @@ public class EvaluatorNESW implements Evaluator {
     }
 
     public int evaluateBonds(Candidate candidate) {
-        if (candidate.bonds <= -1) { // Not calculated before
 
-            int bonds = 0;
+        int bonds = 0;
 
-            for (int i = 0; i < candidate.vertexList.size() - 2; i++) {
-                Vertex toCompare = candidate.vertexList.get(i);
+        for (int i = 0; i < candidate.vertexList.size() - 2; i++) {
+            Vertex toCompare = candidate.vertexList.get(i);
 
-                if (toCompare.isHydrophobic) {
-                    for (int j = i + 2; j < candidate.vertexList.size(); j++) {
-                        Vertex vertex = candidate.vertexList.get(j);
-                        if (vertex.isHydrophobic) {
-                            if (toCompare.neighbouringPosition(vertex)) {
-                                bonds++;
-                            }
+            if (toCompare.isHydrophobic) {
+                for (int j = i + 2; j < candidate.vertexList.size(); j++) {
+                    Vertex vertex = candidate.vertexList.get(j);
+                    if (vertex.isHydrophobic) {
+                        if (toCompare.neighbouringPosition(vertex)) {
+                            bonds++;
                         }
                     }
                 }
             }
-            candidate.bonds = bonds;
         }
-        // Return cached value if this is not the first time the value is needed
-        return candidate.bonds;
+        return bonds;
     }
 
     public int evaluateOverlaps(Candidate candidate) {
-        if (candidate.overlaps <= -1) { // Not calculated before
 
-            int overlaps = 0;
-
-            for (int i = 0; i < candidate.vertexList.size(); i++) {
-                Vertex toCompare = candidate.vertexList.get(i);
-                for (Vertex vertex : candidate.vertexList) {
-                    if (toCompare.equalsPosition(vertex) && toCompare != vertex) {
-                        overlaps++;
-                    }
+        int overlaps = 0;
+        for (int i = 0; i < candidate.vertexList.size(); i++) {
+            Vertex toCompare = candidate.vertexList.get(i);
+            for (Vertex vertex : candidate.vertexList) {
+                if (toCompare.equalsPosition(vertex) && toCompare != vertex) {
+                    overlaps++;
                 }
             }
-
-            overlaps /= 2;
-            candidate.overlaps = overlaps;
         }
-        // Return cached value if this is not the first time the value is needed
-        return candidate.overlaps;
+        overlaps /= 2;
+        overlaps = overlaps;
+
+        return overlaps;
     }
 }
