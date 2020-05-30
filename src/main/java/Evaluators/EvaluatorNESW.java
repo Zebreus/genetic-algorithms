@@ -17,7 +17,9 @@ public class EvaluatorNESW implements Evaluator {
 
     @Override
     public double evaluateFitness(Candidate candidate) {
-        if (candidate.fitness <= -1) { // Not calculated before
+        //TODO Is it a good idea to "cache" fitness this way? Maybe
+        //If fitness was not calculated yet, calculate it
+        if (candidate.getFitness() <= -1) { // Not calculated before
             double fitness;
 
             int hydrophobicBonds = evaluateBonds(candidate);
@@ -25,22 +27,22 @@ public class EvaluatorNESW implements Evaluator {
 
             fitness =(double) (hydrophobicBonds * this.POINTS_PER_BOND) / (double) (overlaps + 1);
 
-            candidate.fitness = fitness;
+            candidate.setFitness(fitness);
         }
-        // Return cached value if this is not the first time the value is needed
-        return candidate.fitness;
+
+        return candidate.getFitness();
     }
 
     public int evaluateBonds(Candidate candidate) {
 
         int bonds = 0;
 
-        for (int i = 0; i < candidate.vertexList.size() - 2; i++) {
-            Vertex toCompare = candidate.vertexList.get(i);
+        for (int i = 0; i < candidate.getVertices().size() - 2; i++) {
+            Vertex toCompare = candidate.getVertices().get(i);
 
             if (isHydrophobic[i]==1) {
-                for (int j = i + 2; j < candidate.vertexList.size(); j++) {
-                    Vertex vertex = candidate.vertexList.get(j);
+                for (int j = i + 2; j < candidate.getVertices().size(); j++) {
+                    Vertex vertex = candidate.getVertices().get(j);
                     if (isHydrophobic[j]==1) {
                         if (toCompare.neighbouringPosition(vertex)) {
                             bonds++;
@@ -55,9 +57,9 @@ public class EvaluatorNESW implements Evaluator {
     public int evaluateOverlaps(Candidate candidate) {
 
         int overlaps = 0;
-        for (int i = 0; i < candidate.vertexList.size(); i++) {
-            Vertex toCompare = candidate.vertexList.get(i);
-            for (Vertex vertex : candidate.vertexList) {
+        for (int i = 0; i < candidate.getVertices().size(); i++) {
+            Vertex toCompare = candidate.getVertices().get(i);
+            for (Vertex vertex : candidate.getVertices()) {
                 if (toCompare.equalsPosition(vertex) && toCompare != vertex) {
                     overlaps++;
                 }

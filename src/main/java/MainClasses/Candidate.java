@@ -5,33 +5,32 @@ import java.util.Arrays;
 
 public class Candidate {
 
-    public int[] outgoingDirection;   // 0 = North | 1 = East | 2 = South | 3 = West
-    public ArrayList<Vertex> vertexList;
-    public double fitness;
+    private final int[] folding;   // 0 = North | 1 = East | 2 = South | 3 = West
+    private ArrayList<Vertex> vertices;
+    private double fitness;
 
-    public Candidate(int[] oD) {
-        this.outgoingDirection = oD;
-        this.vertexList = constructVertexes();
-
+    public Candidate(int[] folding) {
+        this.folding = folding;
+        this.vertices = constructVertices();
         this.fitness = -1d; // Not calculated yet
     }
 
-    public ArrayList<Vertex> constructVertexes() {
+    public ArrayList<Vertex> constructVertices() {
         ArrayList<Vertex> vertexList = new ArrayList<>();
         int currentX = 0;
         int currentY = 0;
 
-        for (int currentVertex = 0; currentVertex < outgoingDirection.length; currentVertex++) {
-            vertexList.add(new Vertex(currentX, currentY, outgoingDirection[currentVertex]));
+        for (int currentVertex = 0; currentVertex < folding.length; currentVertex++) {
+            vertexList.add(new Vertex(currentX, currentY, folding[currentVertex]));
 
             // Update position
-            if (outgoingDirection[currentVertex] == 0) {
+            if (folding[currentVertex] == 0) {
                 currentY++;
-            } else if (outgoingDirection[currentVertex] == 1) {
+            } else if (folding[currentVertex] == 1) {
                 currentX++;
-            } else if (outgoingDirection[currentVertex] == 2) {
+            } else if (folding[currentVertex] == 2) {
                 currentY--;
-            } else if (outgoingDirection[currentVertex] == 3) {
+            } else if (folding[currentVertex] == 3) {
                 currentX--;
             }
         }
@@ -39,22 +38,32 @@ public class Candidate {
         return vertexList;
     }
 
-    public ArrayList<Vertex> getVertexList() {
-        return vertexList;
+    public ArrayList<Vertex> getVertices() {
+        return vertices;
     }
 
     @Override
     public String toString() {
         return "Canidate{" +
-                "outgoingDirection=" + Arrays.toString(outgoingDirection) +
+                "outgoingDirection=" + Arrays.toString(folding) +
                 '}';
     }
 
-    public int[] getOutgoing() {
-        int[] newOut = new int[this.outgoingDirection.length];
+    //TODO What if fitness is not set yet?
+    public double getFitness() {
+        return fitness;
+    }
 
-        for(int i = 0; i < this.outgoingDirection.length; i++) {
-            newOut[i] = this.outgoingDirection[i];
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    //TODO Try out return folding without copy;
+    public int[] getFolding() {
+        int[] newOut = new int[this.folding.length];
+
+        for(int i = 0; i < this.folding.length; i++) {
+            newOut[i] = this.folding[i];
         }
 
         return newOut;

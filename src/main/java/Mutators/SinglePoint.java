@@ -26,23 +26,26 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
 
     @Override
     public Candidate[] mutatePopulation(Candidate[] population) {
+        Candidate[] mutatedPopulation = new Candidate[population.length];
         if (this.mutationChance > MINIMUM_CHANCE) {
-            int proteinLength = population[0].getOutgoing().length;
 
-            for (Candidate candidate : population) {
+            int proteinLength = population[0].getFolding().length;
+
+
+            for (int candidateId = 0; candidateId<population.length ; candidateId++) {
+                int[] mutatedFolding = population[candidateId].getFolding();
                 for (int j = 0; j < this.mutationAttemptsPerCandidate; j++) {
                     if (this.mutationChance > this.rand.nextDouble()) {
                         int mutationPlace = this.rand.nextInt(proteinLength);
                         // TODO: Use the enums or get rid of this hard coded 3 and 4...
                         if (this.isFRL) {
-                            candidate.outgoingDirection[mutationPlace] = this.rand.nextInt(3);
-                            candidate.vertexList = candidate.constructVertexes();
+                            mutatedFolding[mutationPlace] = this.rand.nextInt(3);
                         } else {
-                            candidate.outgoingDirection[mutationPlace] = this.rand.nextInt(4);
-                            candidate.vertexList = candidate.constructVertexes();
+                            mutatedFolding[mutationPlace] = this.rand.nextInt(4);
                         }
                     }
                 }
+                mutatedPopulation[candidateId] = new Candidate(mutatedFolding);
             }
             System.out.printf("MutationChance: %.4f\n", this.mutationChance);
 

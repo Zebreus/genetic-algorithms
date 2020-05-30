@@ -28,7 +28,7 @@ public class OnlyBest implements Selector {
         }
 
         Candidate[] newPopulation = new Candidate[populationSize];
-        int[] bestFolding = population[bestIndex].getOutgoing();
+        int[] bestFolding = population[bestIndex].getFolding();
 
         for (int i = 0; i < populationSize; i++) {
             newPopulation[i] = new Candidate(bestFolding);

@@ -158,7 +158,7 @@ public class GeneticAlgorithm {
         for (Visualizer v : this.visualizers) {
             v.setFilename(String.format("gen_%d.png", gen));
             //TODO Print real bond and overlap amount
-            v.drawProtein(this.population[bestIndex].getVertexList(), bestFitness, -1, -1, gen);
+            v.drawProtein(this.population[bestIndex].getVertices(), bestFitness, -1, -1, gen);
         }
 
         //TODO Print real bond and overlap amount
@@ -168,7 +168,7 @@ public class GeneticAlgorithm {
         // Save the overall best
         if (bestFitness >= this.overallBestFitness) {
             this.overallBestFitness = bestFitness;
-            this.overallBest = new Candidate(this.population[bestIndex].getOutgoing());
+            this.overallBest = new Candidate(this.population[bestIndex].getFolding());
         }
 
         double averageFitness = this.totalFitness / Config.POPULATION_SIZE;
