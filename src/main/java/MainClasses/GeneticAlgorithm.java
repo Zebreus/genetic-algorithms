@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class GeneticAlgorithm {
@@ -40,6 +42,8 @@ public class GeneticAlgorithm {
     Evaluator evaluator;
     Visualizer[] visualizers;
 
+    String jobName;
+
     // Initialize with protein
     public GeneticAlgorithm (int[] protein, Config config) {
         this.isHydrophobic =  protein;
@@ -52,6 +56,11 @@ public class GeneticAlgorithm {
         this.totalFitness = 0;
         this.fitness = new double[config.getPopulationSize()];
         this.overallBestFitness = 0;
+
+        //TODO Maybe specify jobName in config
+        SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyyHHmmss");
+        Date date = new Date();
+        jobName = formatter.format(date);
     }
 
     private void initializeSettings() {
@@ -98,7 +107,7 @@ public class GeneticAlgorithm {
 
                 } else if (config.getMutatorMethods()[i].equals(MutatorMethods.Crossover)) {
                     this.mutators[i] = new Crossover<>(DirectionNESW.class, this.rand,
-                            config.getCrossoverAttemptsPerCandidate(), config.getCrossoverChance(), config.getMutationMinimalChance(), config.getCrossoverMultiplier());
+                            config.getCrossoverAttemptsPerCandidate(), config.getCrossoverChance(), config.getCrossoverMinimalChance(), config.getCrossoverMultiplier());
                 }
             }
 
@@ -159,7 +168,7 @@ public class GeneticAlgorithm {
         }
 
         for (Visualizer v : this.visualizers) {
-            v.setFilename(String.format("gen_%d.png", gen));
+            v.setFilename(String.format("%s_gen_%d.png", jobName, gen));
             //TODO Print real bond and overlap amount
             v.drawProtein(this.population[bestIndex].getVertices(), bestFitness, -1, -1, gen);
         }
