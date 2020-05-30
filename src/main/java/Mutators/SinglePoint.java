@@ -53,6 +53,6 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
 
             this.mutationChance *= (1 - this.mutationMultiplier); // Lower mutation rate with generation
         }
-        return  population;
+        return mutatedPopulation;
     }
 }
