@@ -91,11 +91,11 @@ public class GeneticAlgorithm {
             for (int i = 0; i < Config.MUTATOR_METHODS.length; i++) {
                 if (Config.MUTATOR_METHODS[i].equals(MutatorMethods.SinglePoint)) {
                     this.mutators[i] = new SinglePoint<>(DirectionNESW.class, this.rand,
-                            Config.MUTATION_ATTEMPTS_PER_CANDIDATE, Config.MUTATION_CHANCE, Config.MUTATION_MULTIPLIER);
+                            Config.MUTATION_ATTEMPTS_PER_CANDIDATE, Config.MUTATION_CHANCE, Config.MUTATION_MINIMAL_CHANCE, Config.MUTATION_MULTIPLIER);
 
                 } else if (Config.MUTATOR_METHODS[i].equals(MutatorMethods.Crossover)) {
                     this.mutators[i] = new Crossover<>(DirectionNESW.class, this.rand,
-                            Config.CROSSOVER_ATTEMPTS_PER_CANDIDATE, Config.CROSSOVER_CHANCE, Config.CROSSOVER_MULTIPLIER);
+                            Config.CROSSOVER_ATTEMPTS_PER_CANDIDATE, Config.CROSSOVER_CHANCE, Config.MUTATION_MINIMAL_CHANCE, Config.CROSSOVER_MULTIPLIER);
                 }
             }
 

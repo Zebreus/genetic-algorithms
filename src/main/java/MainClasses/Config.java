@@ -31,8 +31,10 @@ public class Config {
     static int MUTATION_ATTEMPTS_PER_CANDIDATE;
     static double MUTATION_CHANCE;
     static double MUTATION_MULTIPLIER;
+    static double MUTATION_MINIMAL_CHANCE; // -> 0.01% is not worth mutating for
     static int CROSSOVER_ATTEMPTS_PER_CANDIDATE;
     static double CROSSOVER_CHANCE;
+    static double CROSSOVER_MINIMAL_CHANCE; // -> 0.01% is not worth mutating for
     static double CROSSOVER_MULTIPLIER;
 
     static String LOGFILE;
@@ -137,9 +139,11 @@ public class Config {
         // Mutation settings
         MUTATION_ATTEMPTS_PER_CANDIDATE = Integer.parseInt(this.properties.getProperty("mutationAttemptsPerCandidate"));
         MUTATION_CHANCE = Double.parseDouble(this.properties.getProperty("mutationChance"));
+        MUTATION_MINIMAL_CHANCE = Double.parseDouble(this.properties.getProperty("mutationMinimalChance"));
         MUTATION_MULTIPLIER = Double.parseDouble(this.properties.getProperty("mutationMultiplier"));
         CROSSOVER_ATTEMPTS_PER_CANDIDATE = Integer.parseInt(this.properties.getProperty("crossoverAttemptsPerCandidate"));
         CROSSOVER_CHANCE = Double.parseDouble(this.properties.getProperty("crossoverChance"));
+        CROSSOVER_MINIMAL_CHANCE = Double.parseDouble(this.properties.getProperty("crossoverMinimalChance"));
         CROSSOVER_MULTIPLIER = Double.parseDouble(this.properties.getProperty("crossoverMultiplier"));
 
 

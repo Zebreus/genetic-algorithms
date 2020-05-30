@@ -12,22 +12,24 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
     Random rand;
     int mutationAttemptsPerCandidate;
     double mutationChance;
+    double mutationMinimalChance;
     double mutationMultiplier;
 
     public SinglePoint(Class<T> possibleDirections, Random rand, int mutationAttemptsPerCandidate,
-                       double mutationChance, double mutationMultiplier) {
+                       double mutationChance, double mutationMinimalChance, double mutationMultiplier) {
         this.possibleDirections = possibleDirections;
         this.isFRL = Mutator.isFRLEncoding(possibleDirections);
         this.rand = rand;
         this.mutationAttemptsPerCandidate = mutationAttemptsPerCandidate;
         this.mutationChance = mutationChance;
+        this.mutationMinimalChance = mutationMinimalChance;
         this.mutationMultiplier = mutationMultiplier;
     }
 
     @Override
     public Candidate[] mutatePopulation(Candidate[] population) {
         Candidate[] mutatedPopulation = new Candidate[population.length];
-        if (this.mutationChance > MINIMUM_CHANCE) {
+        if (this.mutationChance > mutationMinimalChance) {
 
             int proteinLength = population[0].getFolding().length;
 

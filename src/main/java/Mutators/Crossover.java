@@ -12,22 +12,24 @@ public class Crossover<T extends Enum<?>> implements Mutator {
     Random rand;
     int crossoverAttemptsPerCandidate;
     double crossoverChance;
+    double crossoverMinimalChance;
     double crossoverMultiplier;
 
     public Crossover(Class<T> possibleDirections, Random rand, int crossoverAttemptsPerCandidate,
-                     double crossoverChance, double crossoverMultiplier) {
+                     double crossoverChance, double crossoverMinimalChance, double crossoverMultiplier) {
         this.possibleDirections = possibleDirections;
         this.isFRL = Mutator.isFRLEncoding(possibleDirections);
         this.rand = rand;
         this.crossoverAttemptsPerCandidate = crossoverAttemptsPerCandidate;
         this.crossoverChance = crossoverChance;
+        this.crossoverMinimalChance = crossoverMinimalChance;
         this.crossoverMultiplier = crossoverMultiplier;
     }
 
     @Override
     public Candidate[] mutatePopulation(Candidate[] population) {
         Candidate[] mutatedPopulation = new Candidate[population.length];
-        if (this.crossoverChance > MINIMUM_CHANCE) {
+        if (this.crossoverChance > crossoverMinimalChance) {
             int populationSize = population.length;
             int proteinLength = population[0].getFolding().length;
 
