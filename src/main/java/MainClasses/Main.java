@@ -20,7 +20,8 @@ public class Main {
         boolean imagesRefreshed = Arrays.asList(config.getVisualizers()).contains(VisualizerMethods.Image);
         boolean videoEnabled = Arrays.asList(config.getVisualizers()).contains(VisualizerMethods.Video);
         if (imagesRefreshed && videoEnabled){
-            VideoCreator.createVideo(config.getImageSequencePath(), config.getVideoPathAndFile(),
+            String videoPath = config.getVideoDirectory() + "/" + config.getJobName() + ".mp4";
+            VideoCreator.createVideo(config.getImageSequenceDirectory(), videoPath,
                 config.getImageFps(), config.getImagesToFpsIncrease(), config.getImageFpsMax(),
                     ga.getMaxH(), ga.getMaxW(), config.isZoom());
         }

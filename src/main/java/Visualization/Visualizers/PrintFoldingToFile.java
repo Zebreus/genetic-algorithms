@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class VisualizerNESWtoFile implements Visualizer {
+public class PrintFoldingToFile implements Visualizer {
 
     String folder;
     String filename;
@@ -28,8 +28,10 @@ public class VisualizerNESWtoFile implements Visualizer {
     final int[] isHydrophobic;
     Config config;
 
-    public VisualizerNESWtoFile(int[] isHydrophobic, Config config) {
-        this.folder = config.getImageSequencePath();
+    public PrintFoldingToFile(int[] isHydrophobic, Config config) {
+        //TODO This is not really needed
+        //this.folder = config.getImageSequenceDirectory();
+        this.folder = "";
         this.filename = "image.png"; // Default
 
         this.maxHeight = 0;
@@ -140,7 +142,8 @@ public class VisualizerNESWtoFile implements Visualizer {
         if (!new File(folder).exists()) new File(folder).mkdirs();
 
         try {
-            ImageIO.write(image, "png", new File(folder + File.separator + filename));
+            //ImageIO.write(image, "png", new File(folder + File.separator + filename));
+            ImageIO.write(image, "png", new File(filename));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(0);

@@ -11,15 +11,13 @@ import Mutators.SinglePoint;
 import Selectors.FitnessProportional;
 import Selectors.OnlyBest;
 import Selectors.Tournament;
-import Visualization.Visualizers.VisualizerNESWtoConsole;
-import Visualization.Visualizers.VisualizerNESWtoFile;
+import Visualization.Visualizers.PrintFoldingToConsole;
+import Visualization.Visualizers.PrintFoldingToFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 public class GeneticAlgorithm {
@@ -42,8 +40,6 @@ public class GeneticAlgorithm {
     Evaluator evaluator;
     Visualizer[] visualizers;
 
-    String jobName;
-
     // Initialize with protein
     public GeneticAlgorithm (int[] protein, Config config) {
         this.isHydrophobic =  protein;
@@ -57,10 +53,6 @@ public class GeneticAlgorithm {
         this.fitness = new double[config.getPopulationSize()];
         this.overallBestFitness = 0;
 
-        //TODO Maybe specify jobName in config
-        SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyyHHmmss");
-        Date date = new Date();
-        jobName = formatter.format(date);
     }
 
     private void initializeSettings() {
@@ -83,10 +75,10 @@ public class GeneticAlgorithm {
             int j = 0;
             for (VisualizerMethods vm : config.getVisualizers()) {
                 if (vm.equals(VisualizerMethods.Console)) {
-                    this.visualizers[j] = new VisualizerNESWtoConsole(isHydrophobic, config);
+                    this.visualizers[j] = new PrintFoldingToConsole(isHydrophobic, config);
                     j++;
                 } else if (vm.equals(VisualizerMethods.Image)) {
-                    this.visualizers[j] = new VisualizerNESWtoFile(isHydrophobic, config);
+                    this.visualizers[j] = new PrintFoldingToFile(isHydrophobic, config);
                     j++;
                 }
             }
@@ -129,7 +121,10 @@ public class GeneticAlgorithm {
     private void clearLog() {
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
         try {
-            Files.write(Paths.get(config.getLogfile()), content.getBytes());
+            //TODO This does not belong here
+            Files.createDirectories(Paths.get(config.getLogfileDirectory()));
+            String logfilePath = config.getLogfileDirectory() + "/" + config.getJobName() + ".txt";
+            Files.write(Paths.get(logfilePath), content.getBytes());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -168,7 +163,8 @@ public class GeneticAlgorithm {
         }
 
         for (Visualizer v : this.visualizers) {
-            v.setFilename(String.format("%s_gen_%d.png", jobName, gen));
+            String imagePath = config.getImageSequenceDirectory() + "/" + config.getJobName() + "_" + gen + ".png";
+            v.setFilename(imagePath);
             //TODO Print real bond and overlap amount
             v.drawProtein(this.population[bestIndex].getVertices(), bestFitness, -1, -1, gen);
         }
@@ -191,7 +187,8 @@ public class GeneticAlgorithm {
                 -1);
 
         try {
-            Files.write(Paths.get(config.getLogfile()), log.getBytes(), StandardOpenOption.APPEND);
+            String logfilePath = config.getLogfileDirectory() + "/" + config.getJobName() + ".txt";
+            Files.write(Paths.get(logfilePath), log.getBytes(), StandardOpenOption.APPEND);
 
         } catch (IOException e) {
             e.printStackTrace();

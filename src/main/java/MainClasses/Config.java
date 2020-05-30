@@ -9,6 +9,8 @@ import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 public class Config {
@@ -18,7 +20,6 @@ public class Config {
 
     private String encodingVariant;
     private int seed;
-
 
     private int populationSize;
     private int totalGenerations;
@@ -37,10 +38,12 @@ public class Config {
     private double crossoverMinimalChance; // -> 0.01% is not worth mutating for
     private double crossoverMultiplier;
 
-    private String logfile;
+    //TODO Create directories if they do not exist
     private VisualizerMethods[] visualizers;
-    private String imageSequencePath;
-    private String videoPathAndFile;
+    private String jobName;
+    private String imageSequenceDirectory;
+    private String videoDirectory;
+    private String logfileDirectory;
     private int imageFps;
     private int imagesToFpsIncrease;
     private int imageFpsMax;
@@ -147,7 +150,15 @@ public class Config {
         crossoverMultiplier = Double.parseDouble(this.properties.getProperty("crossoverMultiplier"));
 
         // Output settings
-        logfile = this.properties.getProperty("logfilePath");
+        if(properties.containsKey("jobName")){
+            jobName = this.properties.getProperty("jobName");
+        }else{
+            SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyyHHmmss");
+            Date date = new Date();
+            jobName = formatter.format(date);
+        }
+
+        logfileDirectory = this.properties.getProperty("logfileDirectory");
 
         String[] visualizersToUse = this.properties.getProperty("visualizerType").split(",");
         visualizers = new VisualizerMethods[visualizersToUse.length];
@@ -165,8 +176,8 @@ public class Config {
             }
         }
 
-        imageSequencePath = this.properties.getProperty("imageSequencePath");
-        videoPathAndFile = this.properties.getProperty("videoPathAndFile");
+        imageSequenceDirectory = this.properties.getProperty("imageSequenceDirectory");
+        videoDirectory = this.properties.getProperty("videoDirectory");
         imageFps = Integer.parseInt(this.properties.getProperty("imgFps"));
         imagesToFpsIncrease = Integer.parseInt(this.properties.getProperty("imagesToFpsIncrease"));
         imageFpsMax = Integer.parseInt(this.properties.getProperty("imgFpsMax"));
@@ -245,20 +256,24 @@ public class Config {
         return crossoverMultiplier;
     }
 
-    public String getLogfile() {
-        return logfile;
+    public String getJobName() {
+        return jobName;
+    }
+
+    public String getLogfileDirectory() {
+        return logfileDirectory;
     }
 
     public VisualizerMethods[] getVisualizers() {
         return visualizers;
     }
 
-    public String getImageSequencePath() {
-        return imageSequencePath;
+    public String getImageSequenceDirectory() {
+        return imageSequenceDirectory;
     }
 
-    public String getVideoPathAndFile() {
-        return videoPathAndFile;
+    public String getVideoDirectory() {
+        return videoDirectory;
     }
 
     public int getImageFps() {

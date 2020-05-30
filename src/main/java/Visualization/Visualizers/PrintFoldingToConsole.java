@@ -13,14 +13,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class VisualizerNESWtoConsole implements Visualizer {
+public class PrintFoldingToConsole implements Visualizer {
 
     int maxHeight;
     int maxWidth;
     final int[] isHydrophobic;
     Config config;
 
-    public VisualizerNESWtoConsole(int[] isHydrophobic, Config config) {
+    public PrintFoldingToConsole(int[] isHydrophobic, Config config) {
         this.maxHeight = 0;
         this.maxWidth = 0;
         this.isHydrophobic = isHydrophobic;
