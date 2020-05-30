@@ -18,11 +18,13 @@ public class VisualizerNESWtoConsole implements Visualizer {
     int maxHeight;
     int maxWidth;
     final int[] isHydrophobic;
+    Config config;
 
-    public VisualizerNESWtoConsole(int[] isHydrophobic) {
+    public VisualizerNESWtoConsole(int[] isHydrophobic, Config config) {
         this.maxHeight = 0;
         this.maxWidth = 0;
         this.isHydrophobic = isHydrophobic;
+        this.config = config;
     }
 
     public void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
@@ -46,32 +48,32 @@ public class VisualizerNESWtoConsole implements Visualizer {
 
         switch (cellState) {
             case Empty:
-                return Config.consoleEmpty;
+                return config.getConsoleEmpty();
 
             case Hydrophobic:
-                return Config.consoleHydrophobic;
+                return config.getConsoleHydrophobic();
 
             case Hydrophilic:
-                return Config.consoleHydrophilic;
+                return config.getConsoleHydrophilic();
 
             case HydrophobicMulti:
-                return Config.consoleHydrophobicMulti;
+                return config.getConsoleHydrophobicMulti();
 
             case HydrophilicMulti:
-                return Config.consoleHydrophilicMulti;
+                return config.getConsoleHydrophilicMulti();
 
             case Mixed:
-                return Config.consoleMixed;
+                return config.getConsoleMixed();
 
             case ConnectionVertical:
-                return Config.consoleConnectionVertical;
+                return config.getConsoleConnectionVertical();
 
             case ConnectionHorizontal:
-                return Config.consoleConnectionHorizontal;
+                return config.getConsoleConnectionHorizontal();
 
         }
         // Fallback
-        return Config.consoleEmpty;
+        return config.getConsoleEmpty();
     }
 
 

@@ -13,16 +13,16 @@ public class Main {
         Config config = new Config(propertyPath);
 
         int[] protein = Examples.convertStringToIntArray(Examples.SEQ36);
-        GeneticAlgorithm ga = new GeneticAlgorithm(protein);
+        GeneticAlgorithm ga = new GeneticAlgorithm(protein, config);
         ga.simulateGenerations();
 
         // Create a new video if possible and desired
-        boolean imagesRefreshed = Arrays.asList(Config.VISUALIZERS).contains(VisualizerMethods.Image);
-        boolean videoEnabled = Arrays.asList(Config.VISUALIZERS).contains(VisualizerMethods.Video);
+        boolean imagesRefreshed = Arrays.asList(config.getVisualizers()).contains(VisualizerMethods.Image);
+        boolean videoEnabled = Arrays.asList(config.getVisualizers()).contains(VisualizerMethods.Video);
         if (imagesRefreshed && videoEnabled){
-            VideoCreator.createVideo(Config.IMAGE_SEQUENCE_PATH, Config.VIDEO_PATH_AND_FILE,
-                    Config.IMAGE_FPS, Config.IMAGES_TO_FPS_INCREASE, Config.IMAGE_FPS_MAX,
-                    ga.getMaxH(), ga.getMaxW(), Config.ZOOM);
+            VideoCreator.createVideo(config.getImageSequencePath(), config.getVideoPathAndFile(),
+                config.getImageFps(), config.getImagesToFpsIncrease(), config.getImageFpsMax(),
+                    ga.getMaxH(), ga.getMaxW(), config.isZoom());
         }
     }
 }

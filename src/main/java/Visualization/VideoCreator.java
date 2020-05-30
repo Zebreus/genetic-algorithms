@@ -100,8 +100,9 @@ public class VideoCreator{
 
                 // draws input image to the top left corner
                 Graphics2D g2d = outputImage.createGraphics();
-                g2d.setColor(Config.imageBackground);
-                g2d.fillRect(0,0, maxWidth, maxHeight);
+                //TODO The following two lines should be unnecessary
+                //g2d.setColor(Config.imageBackground);
+                //g2d.fillRect(0,0, maxWidth, maxHeight);
                 g2d.drawImage(inputImage, 0, 0, inputImage.getWidth(), inputImage.getHeight(), null);
                 g2d.dispose();
 
@@ -162,8 +163,9 @@ public class VideoCreator{
 
                 // draws input image to the top left corner
                 Graphics2D g2d = outputImage.createGraphics();
-                g2d.setColor(Config.imageBackground);
-                g2d.fillRect(0,0, maxWidthAfterIndex[0], maxHeightAfterIndex[0]);
+                //TODO The following two lines should be unnecessary
+                //g2d.setColor(Config.imageBackground);
+                //g2d.fillRect(0,0, maxWidthAfterIndex[0], maxHeightAfterIndex[0]);
 
                 int newHeight = 0;
                 int newWidth = 0;

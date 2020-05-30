@@ -26,14 +26,16 @@ public class VisualizerNESWtoFile implements Visualizer {
     int margin = pixelsPerCell * 2;
     int outline = 2;
     final int[] isHydrophobic;
+    Config config;
 
-    public VisualizerNESWtoFile(String folder, int[] isHydrophobic) {
-        this.folder = folder;
+    public VisualizerNESWtoFile(int[] isHydrophobic, Config config) {
+        this.folder = config.getImageSequencePath();
         this.filename = "image.png"; // Default
 
         this.maxHeight = 0;
         this.maxWidth = 0;
         this.isHydrophobic = isHydrophobic;
+        this.config = config;
     }
 
     public void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
@@ -55,12 +57,12 @@ public class VisualizerNESWtoFile implements Visualizer {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = image.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setFont(Config.font);
+        g2.setFont(config.getFont());
         FontMetrics metrics = g2.getFontMetrics();
         int ascent = metrics.getAscent();
 
         // Background
-        g2.setColor(Config.imageBackground);
+        g2.setColor(config.getImageBackground());
         g2.fillRect(0, 0, width, height);
 
         for (int yIndex = cellArray.length-1; yIndex >= 0; yIndex--) {
@@ -77,27 +79,27 @@ public class VisualizerNESWtoFile implements Visualizer {
 
                     case Hydrophobic:
                     case HydrophobicMulti:
-                        aminoColor = Config.imageHydrophobic;
+                        aminoColor = config.getImageHydrophobic();
                         break;
 
                     case Hydrophilic:
                     case HydrophilicMulti:
-                        aminoColor = Config.imageHydrophilic;
+                        aminoColor = config.getImageHydrophilic();
                         break;
 
                     case Mixed:
-                        aminoColor = Config.imageMixed;
+                        aminoColor = config.getImageMixed();
                         break;
 
                     case ConnectionVertical:
-                        g2.setColor(Config.imageConnection);
+                        g2.setColor(config.getImageConnection());
                         g2.fillRect((xIndex * pixelsPerCell) + margin + (pixelsPerCell/2)-outline,
                                 (yIndexPosition * pixelsPerCell) + margin,
                                 outline * 2, pixelsPerCell);
                         break;
 
                     case ConnectionHorizontal:
-                        g2.setColor(Config.imageConnection);
+                        g2.setColor(config.getImageConnection());
                         g2.fillRect((xIndex * pixelsPerCell) + margin,
                                 (yIndexPosition * pixelsPerCell) + margin + (pixelsPerCell/2)-outline,
                                 pixelsPerCell, outline * 2);
@@ -105,14 +107,14 @@ public class VisualizerNESWtoFile implements Visualizer {
                 }
 
                 if (aminoColor != null) {
-                    g2.setColor(Config.imageOutline);
+                    g2.setColor(config.getImageOutline());
                     g2.fillRect((xIndex * pixelsPerCell) + margin, (yIndexPosition * pixelsPerCell) + margin,
                             pixelsPerCell, pixelsPerCell);
                     g2.setColor(aminoColor);
                     g2.fillRect((xIndex * pixelsPerCell) + outline + margin, (yIndexPosition * pixelsPerCell) + outline + margin,
                             pixelsPerCell - (outline * 2), pixelsPerCell - (outline * 2));
 
-                    g2.setColor(Config.imageAminoText);
+                    g2.setColor(config.getImageAminoText());
                     String label = "";
                     for (int aminoIndex : cellArray[yIndex][xIndex].aminoIndexes) {
                         label += aminoIndex + " ";
@@ -125,7 +127,7 @@ public class VisualizerNESWtoFile implements Visualizer {
             }
         }
 
-        g2.setColor(Config.imageText);
+        g2.setColor(config.getImageText());
         String label = "Gen: " + gen
                 + "     Fitness: " + String.format("%.4f", fit)
                 + "     H/H Bonds: " + bond

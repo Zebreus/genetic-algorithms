@@ -23,6 +23,8 @@ import java.util.Random;
 public class GeneticAlgorithm {
     Random rand;
 
+    Config config;
+
     int[] isHydrophobic;
     Candidate[] population;
 
@@ -39,77 +41,78 @@ public class GeneticAlgorithm {
     Visualizer[] visualizers;
 
     // Initialize with protein
-    public GeneticAlgorithm (int[] protein) {
+    public GeneticAlgorithm (int[] protein, Config config) {
         this.isHydrophobic =  protein;
+        this.config = config;
 
         this.initializeSettings();
         this.clearLog();
 
-        this.population = this.initialGenCreator.initializeDirections(Config.POPULATION_SIZE, this.isHydrophobic.length);
+        this.population = this.initialGenCreator.initializeDirections(config.getPopulationSize(), this.isHydrophobic.length);
         this.totalFitness = 0;
-        this.fitness = new double[Config.POPULATION_SIZE];
+        this.fitness = new double[config.getPopulationSize()];
         this.overallBestFitness = 0;
     }
 
     private void initializeSettings() {
-        if (Config.SEED != -1) {
-            this.rand = new Random(Config.SEED);
+        if (config.getSeed() != -1) {
+            this.rand = new Random(config.getSeed());
         } else {
             this.rand = new Random();
         }
 
         // Settings that are dependant on encoding
-        if (Config.ENCODING_VARIANT.equals("NESW")) {
+        if (config.getEncodingVariant().equals("NESW")) {
             int nullCount = 0;
-            for (int i = 0; i < Config.VISUALIZERS.length; i++) {
-                if (!Config.VISUALIZERS[i].equals(VisualizerMethods.Console)
-                        && !Config.VISUALIZERS[i].equals(VisualizerMethods.Image)) {
+            for (int i = 0; i < config.getVisualizers().length; i++) {
+                if (!config.getVisualizers()[i].equals(VisualizerMethods.Console)
+                        && !config.getVisualizers()[i].equals(VisualizerMethods.Image)) {
                     nullCount++;
                 }
             }
-            this.visualizers = new Visualizer[Config.VISUALIZERS.length - nullCount];
+            this.visualizers = new Visualizer[config.getVisualizers().length - nullCount];
             int j = 0;
-            for (VisualizerMethods vm : Config.VISUALIZERS) {
+            for (VisualizerMethods vm : config.getVisualizers()) {
                 if (vm.equals(VisualizerMethods.Console)) {
-                    this.visualizers[j] = new VisualizerNESWtoConsole(isHydrophobic);
+                    this.visualizers[j] = new VisualizerNESWtoConsole(isHydrophobic, config);
                     j++;
                 } else if (vm.equals(VisualizerMethods.Image)) {
-                    this.visualizers[j] = new VisualizerNESWtoFile(Config.IMAGE_SEQUENCE_PATH,isHydrophobic);
+                    this.visualizers[j] = new VisualizerNESWtoFile(isHydrophobic, config);
                     j++;
                 }
             }
 
-            if (Config.INITIALIZATION_METHOD.equals(InitializationMethods.Curl)) {
+            if (config.getInitializationMethod().equals(InitializationMethods.Curl)) {
                 this.initialGenCreator = new Curl<>(DirectionNESW.class);
-            } else if (Config.INITIALIZATION_METHOD.equals(InitializationMethods.Straight)) {
+            } else if (config.getInitializationMethod().equals(InitializationMethods.Straight)) {
                 this.initialGenCreator = new StraightLine();
-            } else if (Config.INITIALIZATION_METHOD.equals(InitializationMethods.Random)) {
+            } else if (config.getInitializationMethod().equals(InitializationMethods.Random)) {
                 this.initialGenCreator = new RandomDirection<>(DirectionNESW.class, this.rand);
             }
 
-            this.mutators = new Mutator[Config.MUTATOR_METHODS.length];
-            for (int i = 0; i < Config.MUTATOR_METHODS.length; i++) {
-                if (Config.MUTATOR_METHODS[i].equals(MutatorMethods.SinglePoint)) {
+            this.mutators = new Mutator[config.getMutatorMethods().length];
+            for (int i = 0; i < config.getMutatorMethods().length; i++) {
+                if (config.getMutatorMethods()[i].equals(MutatorMethods.SinglePoint)) {
                     this.mutators[i] = new SinglePoint<>(DirectionNESW.class, this.rand,
-                            Config.MUTATION_ATTEMPTS_PER_CANDIDATE, Config.MUTATION_CHANCE, Config.MUTATION_MINIMAL_CHANCE, Config.MUTATION_MULTIPLIER);
+                            config.getMutationAttemptsPerCandidate(), config.getMutationChance(), config.getMutationMinimalChance(), config.getMutationMultiplier());
 
-                } else if (Config.MUTATOR_METHODS[i].equals(MutatorMethods.Crossover)) {
+                } else if (config.getMutatorMethods()[i].equals(MutatorMethods.Crossover)) {
                     this.mutators[i] = new Crossover<>(DirectionNESW.class, this.rand,
-                            Config.CROSSOVER_ATTEMPTS_PER_CANDIDATE, Config.CROSSOVER_CHANCE, Config.MUTATION_MINIMAL_CHANCE, Config.CROSSOVER_MULTIPLIER);
+                            config.getCrossoverAttemptsPerCandidate(), config.getCrossoverChance(), config.getMutationMinimalChance(), config.getCrossoverMultiplier());
                 }
             }
 
-            this.evaluator = new EvaluatorNESW(Config.POINTS_PER_BOND, isHydrophobic);
+            this.evaluator = new EvaluatorNESW(config.getPointsPerBond(), isHydrophobic);
 
         } else {
             // TODO: initialization for FRL settings
         }
 
-        if (Config.SELECTION_METHOD.equals(SelectionMethods.Proportional)) {
+        if (config.getSelectionMethod().equals(SelectionMethods.Proportional)) {
             this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
-        } else if (Config.SELECTION_METHOD.equals(SelectionMethods.Tournament)) {
-            this.selector = new Tournament(this.rand, this.isHydrophobic, Config.K);
-        } else if (Config.SELECTION_METHOD.equals(SelectionMethods.OnlyBest)) {
+        } else if (config.getSelectionMethod().equals(SelectionMethods.Tournament)) {
+            this.selector = new Tournament(this.rand, this.isHydrophobic, config.getK());
+        } else if (config.getSelectionMethod().equals(SelectionMethods.OnlyBest)) {
             this.selector = new OnlyBest(this.isHydrophobic);
         }
     }
@@ -117,7 +120,7 @@ public class GeneticAlgorithm {
     private void clearLog() {
         String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
         try {
-            Files.write(Paths.get(Config.LOGFILE), content.getBytes());
+            Files.write(Paths.get(config.getLogfile()), content.getBytes());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -125,7 +128,7 @@ public class GeneticAlgorithm {
     }
 
     public void simulateGenerations() {
-        for (int gen = 0; gen < Config.TOTAL_GENERATIONS-1; gen++) {
+        for (int gen = 0; gen < config.getTotalGenerations()-1; gen++) {
             this.evaluateGeneration(gen);
             this.population = this.selector.selectNewPopulation(this.population, this.fitness, this.totalFitness);
 
@@ -135,7 +138,7 @@ public class GeneticAlgorithm {
 
             System.out.println();
         }
-        evaluateGeneration(Config.TOTAL_GENERATIONS-1);
+        evaluateGeneration(config.getTotalGenerations()-1);
     }
 
     private int evaluateGeneration(int gen) {
@@ -145,7 +148,7 @@ public class GeneticAlgorithm {
         double bestFitness = 0;
         int bestIndex = 0;
         this.totalFitness = 0;
-        for (int i = 0; i < Config.POPULATION_SIZE; i++) {
+        for (int i = 0; i < config.getPopulationSize(); i++) {
             this.fitness[i] = this.evaluator.evaluateFitness(this.population[i]);
             this.totalFitness += this.fitness[i];
 
@@ -171,7 +174,7 @@ public class GeneticAlgorithm {
             this.overallBest = new Candidate(this.population[bestIndex].getFolding());
         }
 
-        double averageFitness = this.totalFitness / Config.POPULATION_SIZE;
+        double averageFitness = this.totalFitness / config.getPopulationSize();
         String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
                 gen, averageFitness, bestFitness,
                 this.evaluator.evaluateFitness(overallBest),
@@ -179,7 +182,7 @@ public class GeneticAlgorithm {
                 -1);
 
         try {
-            Files.write(Paths.get(Config.LOGFILE), log.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(config.getLogfile()), log.getBytes(), StandardOpenOption.APPEND);
 
         } catch (IOException e) {
             e.printStackTrace();
