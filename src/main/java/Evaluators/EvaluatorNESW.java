@@ -16,7 +16,7 @@ public class EvaluatorNESW implements Evaluator {
     }
 
     @Override
-    public double evaluateFitness(Candidate candidate) {
+    public Candidate evaluateFitness(Candidate candidate) {
         //TODO Is it a good idea to "cache" fitness this way? Maybe
         //If fitness was not calculated yet, calculate it
         if (candidate.getFitness() <= -1) { // Not calculated before
@@ -30,7 +30,7 @@ public class EvaluatorNESW implements Evaluator {
             candidate.setFitness(fitness);
         }
 
-        return candidate.getFitness();
+        return candidate;
     }
 
     public int evaluateBonds(Candidate candidate) {

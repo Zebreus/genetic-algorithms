@@ -4,5 +4,5 @@ import MainClasses.Candidate;
 
 public interface Evaluator {
 
-    double evaluateFitness(Candidate candidate);
+    Candidate evaluateFitness(Candidate candidate);
 }

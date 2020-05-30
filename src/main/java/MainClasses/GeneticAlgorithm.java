@@ -153,7 +153,8 @@ public class GeneticAlgorithm {
         int bestIndex = 0;
         this.totalFitness = 0;
         for (int i = 0; i < config.getPopulationSize(); i++) {
-            this.fitness[i] = this.evaluator.evaluateFitness(this.population[i]);
+            this.population[i] = this.evaluator.evaluateFitness(this.population[i]);
+            this.fitness[i] = this.population[i].getFitness();
             this.totalFitness += this.fitness[i];
 
             if (this.fitness[i] > bestFitness) {
@@ -182,7 +183,7 @@ public class GeneticAlgorithm {
         double averageFitness = this.totalFitness / config.getPopulationSize();
         String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
                 gen, averageFitness, bestFitness,
-                this.evaluator.evaluateFitness(overallBest),
+                this.overallBest.getFitness(),
                 -1,
                 -1);
 
