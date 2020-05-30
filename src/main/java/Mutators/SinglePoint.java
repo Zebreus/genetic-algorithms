@@ -27,7 +27,7 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
     }
 
     @Override
-    public Candidate[] mutatePopulation(Candidate[] population) {
+    public Candidate[] generateMutatedPopulation(Candidate[] population) {
         Candidate[] mutatedPopulation = new Candidate[population.length];
         if (this.mutationChance > mutationMinimalChance) {
 

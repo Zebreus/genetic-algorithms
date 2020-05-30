@@ -5,7 +5,7 @@ import MainClasses.Candidate;
 
 public interface Mutator {
 
-    Candidate[] mutatePopulation(Candidate[] population);
+    Candidate[] generateMutatedPopulation(Candidate[] population);
 
     //TODO Remove, when decided on FRL vs NESW
     static <T extends Enum<?>> boolean isFRLEncoding(Class<T> possibleDirections) {

@@ -130,7 +130,7 @@ public class GeneticAlgorithm {
             this.population = this.selector.selectNewPopulation(this.population, this.fitness, this.totalFitness);
 
             for (Mutator m : mutators) { // SinglePoint and Crossover at the moment
-                this.population = m.mutatePopulation(this.population);
+                this.population = m.generateMutatedPopulation(this.population);
             }
 
             System.out.println();
