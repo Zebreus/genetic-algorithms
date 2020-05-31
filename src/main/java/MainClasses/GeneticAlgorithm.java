@@ -71,14 +71,7 @@ public class GeneticAlgorithm {
 
         // Settings that are dependant on encoding
         if (config.getEncodingVariant().equals("NESW")) {
-            int nullCount = 0;
-            /*for (int i = 0; i < config.getVisualizers().length; i++) {
-                if (!config.getVisualizers()[i].equals(VisualizerMethods.Console)
-                        && !config.getVisualizers()[i].equals(VisualizerMethods.Image)) {
-                    nullCount++;
-                }
-            }*/
-            this.visualizers = new Visualizer[config.getVisualizers().length - nullCount];
+            this.visualizers = new Visualizer[config.getVisualizers().length];
             int j = 0;
             for (VisualizerMethods vm : config.getVisualizers()) {
                 if (vm.equals(VisualizerMethods.Console)) {
@@ -135,17 +128,17 @@ public class GeneticAlgorithm {
     }
 
     public void simulateGenerations() {
-        for (int gen = 0; gen < config.getTotalGenerations()-1; gen++) {
+        evaluateGeneration();
+        for (int gen = 0; gen < config.getTotalGenerations(); gen++) {
             //TODO Remove with the new Generation class
             generation = gen;
 
-            evaluateGeneration();
             visualizeGeneration();
-
             filterGeneration();
             mutateGeneration();
+            evaluateGeneration();
+
         }
-        evaluateGeneration();
         visualizeGeneration();
     }
 
