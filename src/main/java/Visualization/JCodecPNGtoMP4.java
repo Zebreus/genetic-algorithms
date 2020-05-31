@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class JCodecPNGtoMP4 {
 
-    static void sortByNumber(File[] files) {
+    public static void sortByNumber(File[] files) {
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
@@ -64,7 +64,7 @@ public class JCodecPNGtoMP4 {
         });
     }
 
-    static void generateVideoBySequenceImages(File videoFile, String pathImages, String imageExt,
+    public static void generateVideoBySequenceImages(File videoFile, String pathImages, String imageExt,
                                               int fps, int imgToFpsIncrease, int maxFps) throws Exception {
         SeekableByteChannel out = null;
         try {

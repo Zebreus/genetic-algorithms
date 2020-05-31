@@ -14,6 +14,7 @@ import Selectors.Tournament;
 import Visualization.Visualizers.BestFoldingToConsole;
 import Visualization.Visualizers.BestFoldingToImage;
 
+import Visualization.Visualizers.BestFoldingsToVideo;
 import Visualization.Visualizers.GenerationOverviewToConsole;
 import Visualization.Visualizers.GenerationProgressToLog;
 import java.io.IOException;
@@ -91,6 +92,9 @@ public class GeneticAlgorithm {
                     j++;
                 }else if (vm.equals(VisualizerMethods.Generation)) {
                     this.visualizers[j] = new GenerationOverviewToConsole(isHydrophobic, config);
+                    j++;
+                }else if (vm.equals(VisualizerMethods.Video)) {
+                    this.visualizers[j] = new BestFoldingsToVideo(config);
                     j++;
                 }
             }

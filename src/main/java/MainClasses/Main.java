@@ -16,14 +16,5 @@ public class Main {
         GeneticAlgorithm ga = new GeneticAlgorithm(protein, config);
         ga.simulateGenerations();
 
-        // Create a new video if possible and desired
-        boolean imagesRefreshed = Arrays.asList(config.getVisualizers()).contains(VisualizerMethods.Image);
-        boolean videoEnabled = Arrays.asList(config.getVisualizers()).contains(VisualizerMethods.Video);
-        if (imagesRefreshed && videoEnabled){
-            String videoPath = config.getVideoDirectory() + "/" + config.getJobName() + ".mp4";
-            VideoCreator.createVideo(config.getImageSequenceDirectory(), videoPath,
-                config.getImageFps(), config.getImagesToFpsIncrease(), config.getImageFpsMax(),
-                    ga.getMaxH(), ga.getMaxW(), config.isZoom());
-        }
     }
 }
