@@ -2,8 +2,9 @@ package MainClasses;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
-public class Candidate {
+public class Candidate implements Comparable<Candidate> {
 
     private final int[] folding;   // 0 = North | 1 = East | 2 = South | 3 = West
     private ArrayList<Vertex> vertices;
@@ -67,5 +68,11 @@ public class Candidate {
         }
 
         return newOut;
+    }
+
+    @Override
+    public int compareTo(Candidate that)
+    {
+        return (int)(1000.0*(this.getFitness() - that.getFitness()));
     }
 }
