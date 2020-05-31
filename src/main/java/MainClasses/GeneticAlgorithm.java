@@ -134,26 +134,39 @@ public class GeneticAlgorithm {
         for (int gen = 0; gen < config.getTotalGenerations()-1; gen++) {
             //TODO Remove with the new Generation class
             generation = gen;
-            this.evaluateGeneration(gen);
-            this.population = this.selector.selectNewPopulation(this.population, this.fitness, this.totalFitness);
 
-            for (Mutator m : mutators) { // SinglePoint and Crossover at the moment
-                this.population = m.generateMutatedPopulation(this.population);
-            }
+            evaluateGeneration();
+            visualizeGeneration();
 
-            System.out.println();
+            filterGeneration();
+            mutateGeneration();
         }
-        evaluateGeneration(config.getTotalGenerations()-1);
+        evaluateGeneration();
+        visualizeGeneration();
     }
 
-    private void evaluateGeneration(int gen) {
+    //TODO These should all be in the new Generation class with definitions like
+    //     mutateGeneration(Mutator e);
+    private void evaluateGeneration() {
         for (int i = 0; i < population.length; i++) {
             this.population[i] = this.evaluator.evaluateFitness(this.population[i]);
         }
+    }
 
+    private void visualizeGeneration(){
         for (Visualizer v : this.visualizers) {
             v.drawProtein(this.population, this);
         }
+    }
+
+    private void mutateGeneration(){
+        for (Mutator m : mutators) { // SinglePoint and Crossover at the moment
+            this.population = m.generateMutatedPopulation(this.population);
+        }
+    }
+
+    private void filterGeneration(){
+        this.population = this.selector.selectNewPopulation(this.population);
     }
 
     public int getMaxH() {
