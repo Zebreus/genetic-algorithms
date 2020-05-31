@@ -14,6 +14,7 @@ import Selectors.Tournament;
 import Visualization.Visualizers.BestFoldingToConsole;
 import Visualization.Visualizers.BestFoldingToImage;
 
+import Visualization.Visualizers.GenerationProgressToLog;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -50,7 +51,6 @@ public class GeneticAlgorithm {
         this.config = config;
 
         this.initializeSettings();
-        this.clearLog();
 
         this.population = this.initialGenCreator.initializeDirections(config.getPopulationSize(), this.isHydrophobic.length);
         this.totalFitness = 0;
@@ -70,12 +70,12 @@ public class GeneticAlgorithm {
         // Settings that are dependant on encoding
         if (config.getEncodingVariant().equals("NESW")) {
             int nullCount = 0;
-            for (int i = 0; i < config.getVisualizers().length; i++) {
+            /*for (int i = 0; i < config.getVisualizers().length; i++) {
                 if (!config.getVisualizers()[i].equals(VisualizerMethods.Console)
                         && !config.getVisualizers()[i].equals(VisualizerMethods.Image)) {
                     nullCount++;
                 }
-            }
+            }*/
             this.visualizers = new Visualizer[config.getVisualizers().length - nullCount];
             int j = 0;
             for (VisualizerMethods vm : config.getVisualizers()) {
@@ -84,6 +84,9 @@ public class GeneticAlgorithm {
                     j++;
                 } else if (vm.equals(VisualizerMethods.Image)) {
                     this.visualizers[j] = new BestFoldingToImage(isHydrophobic, config);
+                    j++;
+                }else if (vm.equals(VisualizerMethods.Log)) {
+                    this.visualizers[j] = new GenerationProgressToLog(isHydrophobic, config);
                     j++;
                 }
             }
@@ -120,19 +123,6 @@ public class GeneticAlgorithm {
             this.selector = new Tournament(this.rand, this.isHydrophobic, config.getK());
         } else if (config.getSelectionMethod().equals(SelectionMethods.OnlyBest)) {
             this.selector = new OnlyBest(this.isHydrophobic);
-        }
-    }
-
-    private void clearLog() {
-        String content = "Generation\tAverage Fitness\tBest Fitness\tOverall Best Fitness\tBonds\tOverlaps\n";
-        try {
-            //TODO This does not belong here
-            Files.createDirectories(Paths.get(config.getLogfileDirectory()));
-            String logfilePath = config.getLogfileDirectory() + "/" + config.getJobName() + ".txt";
-            Files.write(Paths.get(logfilePath), content.getBytes());
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -186,19 +176,6 @@ public class GeneticAlgorithm {
         }
 
         double averageFitness = this.totalFitness / config.getPopulationSize();
-        String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
-                gen, averageFitness, bestFitness,
-                this.overallBest.getFitness(),
-                -1,
-                -1);
-
-        try {
-            String logfilePath = config.getLogfileDirectory() + "/" + config.getJobName() + ".txt";
-            Files.write(Paths.get(logfilePath), log.getBytes(), StandardOpenOption.APPEND);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         return bestIndex;
     }

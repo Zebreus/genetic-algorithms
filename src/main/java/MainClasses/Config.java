@@ -173,6 +173,9 @@ public class Config {
                 case "video":
                     visualizers[i] = VisualizerMethods.Video;
                     break;
+                case "log":
+                    visualizers[i] = VisualizerMethods.Log;
+                    break;
             }
         }
 
