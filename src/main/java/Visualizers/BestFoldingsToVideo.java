@@ -51,8 +51,7 @@ public class BestFoldingsToVideo implements Visualizer {
 
   @Override
   public void drawProtein(Candidate[] generation, GeneticAlgorithm geneticAlgorithm) {
-    //TODO Only render video for the last generation
-    if(geneticAlgorithm.generation == config.getTotalGenerations()-1){
+    if(geneticAlgorithm.generation == config.getTotalGenerations()){
       String filename = config.getLogfileDirectory() + "/" + config.getJobName() + ".mp4";
       createVideo(
           config.getImageSequenceDirectory(),

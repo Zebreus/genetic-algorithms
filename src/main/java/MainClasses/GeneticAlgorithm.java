@@ -127,9 +127,9 @@ public class GeneticAlgorithm {
         evaluateGeneration();
         for (int gen = 0; gen < config.getTotalGenerations(); gen++) {
             //TODO Remove with the new Generation class
-            generation = gen;
 
             visualizeGeneration();
+            generation = gen+1;
             filterGeneration();
             mutateGeneration();
             evaluateGeneration();
