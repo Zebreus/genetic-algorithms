@@ -11,16 +11,12 @@ import Mutators.SinglePoint;
 import Selectors.FitnessProportional;
 import Selectors.OnlyBest;
 import Selectors.Tournament;
-import Visualization.Visualizers.BestFoldingToConsole;
-import Visualization.Visualizers.BestFoldingToImage;
+import Visualizers.BestFoldingToConsole;
+import Visualizers.BestFoldingToImage;
 
-import Visualization.Visualizers.BestFoldingsToVideo;
-import Visualization.Visualizers.GenerationOverviewToConsole;
-import Visualization.Visualizers.GenerationProgressToLog;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import Visualizers.BestFoldingsToVideo;
+import Visualizers.GenerationOverviewToConsole;
+import Visualizers.GenerationProgressToLog;
 import java.util.Random;
 
 public class GeneticAlgorithm {

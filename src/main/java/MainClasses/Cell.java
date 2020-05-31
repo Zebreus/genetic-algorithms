@@ -1,4 +1,4 @@
-package Visualization;
+package MainClasses;
 
 import Enums.State;
 

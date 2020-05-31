@@ -1,11 +1,10 @@
-package Visualization.Visualizers;
+package Visualizers;
 
 import Interfaces.Visualizer;
 import MainClasses.Candidate;
 import MainClasses.Config;
 import MainClasses.GeneticAlgorithm;
-import Visualization.JCodecPNGtoMP4;
-import Visualization.VideoCreator;
+import MainClasses.JCodecPNGtoMP4;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;

@@ -1,4 +1,4 @@
-package Visualization.Visualizers;
+package Visualizers;
 
 import Evaluators.EvaluatorNESW;
 import Interfaces.Visualizer;

@@ -1,14 +1,13 @@
-package Visualization.Visualizers;
+package Visualizers;
 
 import Enums.State;
 import Evaluators.EvaluatorNESW;
-import Interfaces.Evaluator;
 import Interfaces.Visualizer;
 import MainClasses.Candidate;
 import MainClasses.Config;
 import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
-import Visualization.Cell;
+import MainClasses.Cell;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

@@ -4,7 +4,7 @@ import Enums.State;
 import MainClasses.Candidate;
 import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
-import Visualization.Cell;
+import MainClasses.Cell;
 
 import java.util.ArrayList;
 import java.util.List;

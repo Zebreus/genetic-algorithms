@@ -1,4 +1,4 @@
-package Visualization.Visualizers;
+package Visualizers;
 
 import Enums.State;
 import Interfaces.Visualizer;
@@ -6,13 +6,8 @@ import MainClasses.Candidate;
 import MainClasses.Config;
 import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
-import Visualization.Cell;
+import MainClasses.Cell;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class BestFoldingToConsole implements Visualizer {

@@ -1,4 +1,4 @@
-package Visualization;
+package MainClasses;
 
 /**
  * Using NIO e JCodec to convert multiple sequence png images to mp4 video file
