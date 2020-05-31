@@ -7,31 +7,21 @@ import java.util.Random;
 
 public class OnlyBest implements Selector {
 
-    int[] isHydrophobic;
-
-    public OnlyBest(int[] isHydrophobic) {
-        this.isHydrophobic = isHydrophobic;
+    public OnlyBest() {
     }
 
     @Override
-    public Candidate[] selectNewPopulation(Candidate[] population, double[] fitness, double totalFitness) {
-        int populationSize = population.length;
-
-        int bestIndex = 0;
-        double bestFitness = 0;
-
-        for (int i = 0; i < populationSize; i++) {
-            if (fitness[i] >= bestFitness) {
-                bestFitness = fitness[i];
-                bestIndex = i;
+    public Candidate[] selectNewPopulation(Candidate[] generation) {
+        Candidate bestCandidate = generation[0];
+        for (Candidate candidate: generation) {
+            if (candidate.getFitness() >= bestCandidate.getFitness()) {
+                bestCandidate = candidate;
             }
         }
 
-        Candidate[] newPopulation = new Candidate[populationSize];
-        int[] bestFolding = population[bestIndex].getFolding();
-
-        for (int i = 0; i < populationSize; i++) {
-            newPopulation[i] = new Candidate(bestFolding);
+        Candidate[] newPopulation = new Candidate[generation.length];
+        for (int i = 0; i < generation.length; i++) {
+            newPopulation[i] = new Candidate(bestCandidate.getFolding());
         }
 
         return newPopulation;
