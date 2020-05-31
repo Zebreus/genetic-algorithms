@@ -35,7 +35,8 @@ public class GenerationOverviewToConsole implements Visualizer {
     int bonds = bondsOverlapsEvaluator.evaluateBonds(bestCandidateOfGeneration);
     int overlaps = bondsOverlapsEvaluator.evaluateBonds(bestCandidateOfGeneration);
 
-    System.out.println("Generation " + geneticAlgorithm.generation + ":");
+    System.out.println("Generation " + geneticAlgorithm.generation + "/" + config.getTotalGenerations() + ":");
+    System.out.println("Population size: " + generation.length);
     System.out.println("The fitness is: "
         + bestCandidateOfGeneration.getFitness()
         + " [hydrophobicBonds = " + bonds + " | overlaps = " + overlaps + "]");
