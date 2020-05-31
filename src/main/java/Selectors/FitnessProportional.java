@@ -3,37 +3,40 @@ package Selectors;
 import Interfaces.Selector;
 import MainClasses.Candidate;
 
+import MainClasses.Config;
 import java.util.Random;
 
 public class FitnessProportional implements Selector {
 
     Random rand;
-    int[] isHydrophobic;
+    Config config;
 
-    public FitnessProportional(Random rand, int[] isHydrophobic) {
+    public FitnessProportional(Config config, Random rand) {
         this.rand = rand;
-        this.isHydrophobic = isHydrophobic;
+        this.config = config;
     }
 
     @Override
-    public Candidate[] selectNewPopulation(Candidate[] population, double[] fitness, double totalFitness) {
-        int populationSize = population.length;
+    public Candidate[] selectNewPopulation(Candidate[] generation) {
+        int populationSize = generation.length;
 
-        // Pick set for next generation
-        double[] proportionalFitness = new double[populationSize];
-        for (int i = 0; i < populationSize; i++) {
-            proportionalFitness[i] = fitness[i] / totalFitness;
+        double totalFitness = 0.0;
+        for (Candidate candidate: generation) {
+            totalFitness += candidate.getFitness();
         }
 
         Candidate[] newPopulation = new Candidate[populationSize];
         for (int i = 0; i < populationSize; i++) {
-            double picked = rand.nextDouble();
-            int j = -1;
-            while (picked > 0) {
-                j++;
-                picked -= proportionalFitness[j];
+            //Select a number between 0 and the maximum fitness
+            double requiredFitness = rand.nextDouble() * totalFitness;
+            double currentFitness = 0.0;
+            for (Candidate candidate : generation) {
+                currentFitness += candidate.getFitness();
+                if(currentFitness >= requiredFitness) {
+                    newPopulation[i] = candidate;
+                    break;
+                }
             }
-            newPopulation[i] = new Candidate(population[j].getFolding());
         }
 
         return newPopulation;

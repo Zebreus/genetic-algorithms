@@ -122,7 +122,7 @@ public class GeneticAlgorithm {
         }
 
         if (config.getSelectionMethod().equals(SelectionMethods.Proportional)) {
-            this.selector = new FitnessProportional(this.rand, this.isHydrophobic);
+            this.selector = new FitnessProportional(this.config, this.rand);
         } else if (config.getSelectionMethod().equals(SelectionMethods.Tournament)) {
             this.selector = new Tournament(this.rand, this.isHydrophobic, config.getK());
         } else if (config.getSelectionMethod().equals(SelectionMethods.OnlyBest)) {
