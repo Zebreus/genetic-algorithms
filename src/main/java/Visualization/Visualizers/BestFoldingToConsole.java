@@ -2,7 +2,9 @@ package Visualization.Visualizers;
 
 import Enums.State;
 import Interfaces.Visualizer;
+import MainClasses.Candidate;
 import MainClasses.Config;
+import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
 import Visualization.Cell;
 
@@ -13,23 +15,25 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PrintFoldingToConsole implements Visualizer {
+public class BestFoldingToConsole implements Visualizer {
 
-    int maxHeight;
-    int maxWidth;
     final int[] isHydrophobic;
     Config config;
 
-    public PrintFoldingToConsole(int[] isHydrophobic, Config config) {
-        this.maxHeight = 0;
-        this.maxWidth = 0;
+    public BestFoldingToConsole(int[] isHydrophobic, Config config) {
         this.isHydrophobic = isHydrophobic;
         this.config = config;
     }
 
-    public void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
-        // Copy VertexList to be able to manipulate it
-        ArrayList<Vertex> vertexList = Visualizer.deepCopyVertexList(vertexListOriginal);
+    public void drawProtein(Candidate[] generation, GeneticAlgorithm geneticAlgorithm) {
+        Candidate bestCandidateOfGeneration = generation[0];
+        for (Candidate evaluatedCandidate : generation) {
+            if(bestCandidateOfGeneration.getFitness() < evaluatedCandidate.getFitness()){
+                bestCandidateOfGeneration=evaluatedCandidate;
+            }
+        }
+
+        ArrayList<Vertex> vertexList = bestCandidateOfGeneration.getVertices();
 
         Cell[][] cellArray = Visualizer.convertProteinTo2DArray(vertexList, isHydrophobic);
 
@@ -74,21 +78,5 @@ public class PrintFoldingToConsole implements Visualizer {
         }
         // Fallback
         return config.getConsoleEmpty();
-    }
-
-
-    @Override
-    public void setFilename(String format) {
-        // Only here so file based visualizers work
-    }
-
-    @Override
-    public int getMaxH() {
-        return this.maxHeight;
-    }
-
-    @Override
-    public int getMaxW() {
-        return  this.maxWidth;
     }
 }

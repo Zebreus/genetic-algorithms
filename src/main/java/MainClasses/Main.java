@@ -12,7 +12,7 @@ public class Main {
         String propertyPath = "./src/main/resources/genetic.properties";
         Config config = new Config(propertyPath);
 
-        int[] protein = Examples.convertStringToIntArray(Examples.SEQ36);
+        int[] protein = Examples.convertStringToIntArray(Examples.SEQ50);
         GeneticAlgorithm ga = new GeneticAlgorithm(protein, config);
         ga.simulateGenerations();
 

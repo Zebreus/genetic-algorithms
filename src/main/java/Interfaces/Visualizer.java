@@ -1,6 +1,8 @@
 package Interfaces;
 
 import Enums.State;
+import MainClasses.Candidate;
+import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
 import Visualization.Cell;
 
@@ -9,7 +11,8 @@ import java.util.List;
 
 public interface Visualizer {
 
-    void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen);
+    //TODO There should probably be a seperate datastructure for generation information/ga information
+    void drawProtein(Candidate[] generation, GeneticAlgorithm geneticAlgorithm);
 
     static ArrayList<Vertex> deepCopyVertexList (List<Vertex> vertexListOriginal) {
         ArrayList<Vertex> vertexList = new ArrayList<>();
@@ -84,8 +87,4 @@ public interface Visualizer {
 
         return cellArray;
     }
-
-    void setFilename(String filename);
-    int getMaxH();
-    int getMaxW();
 }

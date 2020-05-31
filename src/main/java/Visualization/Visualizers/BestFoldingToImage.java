@@ -1,11 +1,17 @@
 package Visualization.Visualizers;
 
 import Enums.State;
+import Evaluators.EvaluatorNESW;
+import Interfaces.Evaluator;
 import Interfaces.Visualizer;
+import MainClasses.Candidate;
 import MainClasses.Config;
+import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
 import Visualization.Cell;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,10 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PrintFoldingToFile implements Visualizer {
-
-    String folder;
-    String filename;
+public class BestFoldingToImage implements Visualizer {
 
     int maxHeight;
     int maxWidth;
@@ -28,21 +31,31 @@ public class PrintFoldingToFile implements Visualizer {
     final int[] isHydrophobic;
     Config config;
 
-    public PrintFoldingToFile(int[] isHydrophobic, Config config) {
-        //TODO This is not really needed
-        //this.folder = config.getImageSequenceDirectory();
-        this.folder = "";
-        this.filename = "image.png"; // Default
-
+    public BestFoldingToImage(int[] isHydrophobic, Config config) {
         this.maxHeight = 0;
         this.maxWidth = 0;
         this.isHydrophobic = isHydrophobic;
         this.config = config;
+        try {
+            Files.createDirectories(Paths.get(config.getImageSequenceDirectory()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public void drawProtein(ArrayList<Vertex> vertexListOriginal, double fit, int bond, int over, int gen) {
-        // Copy VertexList to be able to manipulate it
-        ArrayList<Vertex> vertexList = Visualizer.deepCopyVertexList(vertexListOriginal);
+    public void drawProtein(Candidate[] generation, GeneticAlgorithm geneticAlgorithm) {
+        String filename = config.getImageSequenceDirectory() + "/" + config.getJobName() + "_" + geneticAlgorithm.generation + ".png";
+
+        //TODO This should probably be in the new Generation Class
+        Candidate bestCandidateOfGeneration = generation[0];
+        for (Candidate evaluatedCandidate : generation) {
+            if(bestCandidateOfGeneration.getFitness() < evaluatedCandidate.getFitness()){
+                bestCandidateOfGeneration=evaluatedCandidate;
+            }
+        }
+
+        ArrayList<Vertex> vertexList = bestCandidateOfGeneration.getVertices();
 
         Cell[][] cellArray = Visualizer.convertProteinTo2DArray(vertexList, this.isHydrophobic);
 
@@ -130,16 +143,18 @@ public class PrintFoldingToFile implements Visualizer {
         }
 
         g2.setColor(config.getImageText());
-        String label = "Gen: " + gen
-                + "     Fitness: " + String.format("%.4f", fit)
-                + "     H/H Bonds: " + bond
-                + "     Overlaps: " + over;
+        //TODO Get the labels from the new Generation class?
+        EvaluatorNESW evaluator = new EvaluatorNESW(1,isHydrophobic);
+        int bonds = evaluator.evaluateBonds(bestCandidateOfGeneration);
+        int overlaps = evaluator.evaluateBonds(bestCandidateOfGeneration);
+        String label = "Gen: " + geneticAlgorithm.generation
+                + "     Fitness: " + String.format("%.4f", bestCandidateOfGeneration.getFitness())
+                + "     H/H Bonds: " + bonds
+                + "     Overlaps: " + overlaps;
         int labelWidth = metrics.stringWidth(label);
         int x = margin / 4;
         int y = margin / 4;
         g2.drawString(label, x, y);
-
-        if (!new File(folder).exists()) new File(folder).mkdirs();
 
         try {
             //ImageIO.write(image, "png", new File(folder + File.separator + filename));
@@ -150,17 +165,10 @@ public class PrintFoldingToFile implements Visualizer {
         }
     }
 
-    @Override
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    @Override
     public int getMaxH() {
         return this.maxHeight;
     }
 
-    @Override
     public int getMaxW() {
         return  this.maxWidth;
     }

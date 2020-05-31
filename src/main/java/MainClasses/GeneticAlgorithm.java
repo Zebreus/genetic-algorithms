@@ -11,8 +11,8 @@ import Mutators.SinglePoint;
 import Selectors.FitnessProportional;
 import Selectors.OnlyBest;
 import Selectors.Tournament;
-import Visualization.Visualizers.PrintFoldingToConsole;
-import Visualization.Visualizers.PrintFoldingToFile;
+import Visualization.Visualizers.BestFoldingToConsole;
+import Visualization.Visualizers.BestFoldingToImage;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,20 +25,24 @@ public class GeneticAlgorithm {
 
     Config config;
 
-    int[] isHydrophobic;
-    Candidate[] population;
+    //TODO Make private again when the Generation class is created
+    public int[] isHydrophobic;
+    public Candidate[] population;
 
-    double totalFitness;
-    double[] fitness;
+    public double totalFitness;
+    public double[] fitness;
 
-    double overallBestFitness;
-    Candidate overallBest;
+    public double overallBestFitness;
+    public Candidate overallBest;
 
-    InitialGenerationCreator initialGenCreator;
-    Mutator[] mutators;
-    Selector selector;
-    Evaluator evaluator;
-    Visualizer[] visualizers;
+    public InitialGenerationCreator initialGenCreator;
+    public Mutator[] mutators;
+    public Selector selector;
+    public Evaluator evaluator;
+    public Visualizer[] visualizers;
+
+    //TODO Remove again with the new Generation class
+    public int generation;
 
     // Initialize with protein
     public GeneticAlgorithm (int[] protein, Config config) {
@@ -52,6 +56,7 @@ public class GeneticAlgorithm {
         this.totalFitness = 0;
         this.fitness = new double[config.getPopulationSize()];
         this.overallBestFitness = 0;
+        this.generation = 0;
 
     }
 
@@ -75,10 +80,10 @@ public class GeneticAlgorithm {
             int j = 0;
             for (VisualizerMethods vm : config.getVisualizers()) {
                 if (vm.equals(VisualizerMethods.Console)) {
-                    this.visualizers[j] = new PrintFoldingToConsole(isHydrophobic, config);
+                    this.visualizers[j] = new BestFoldingToConsole(isHydrophobic, config);
                     j++;
                 } else if (vm.equals(VisualizerMethods.Image)) {
-                    this.visualizers[j] = new PrintFoldingToFile(isHydrophobic, config);
+                    this.visualizers[j] = new BestFoldingToImage(isHydrophobic, config);
                     j++;
                 }
             }
@@ -133,6 +138,8 @@ public class GeneticAlgorithm {
 
     public void simulateGenerations() {
         for (int gen = 0; gen < config.getTotalGenerations()-1; gen++) {
+            //TODO Remove with the new Generation class
+            generation = gen;
             this.evaluateGeneration(gen);
             this.population = this.selector.selectNewPopulation(this.population, this.fitness, this.totalFitness);
 
@@ -164,10 +171,8 @@ public class GeneticAlgorithm {
         }
 
         for (Visualizer v : this.visualizers) {
-            String imagePath = config.getImageSequenceDirectory() + "/" + config.getJobName() + "_" + gen + ".png";
-            v.setFilename(imagePath);
             //TODO Print real bond and overlap amount
-            v.drawProtein(this.population[bestIndex].getVertices(), bestFitness, -1, -1, gen);
+            v.drawProtein(this.population, this);
         }
 
         //TODO Print real bond and overlap amount
@@ -199,22 +204,20 @@ public class GeneticAlgorithm {
     }
 
     public int getMaxH() {
-        int maxHAcrossVisualiszators = 0;
         for (Visualizer v : visualizers) {
-            if (maxHAcrossVisualiszators < v.getMaxH()) {
-                maxHAcrossVisualiszators = v.getMaxH();
+            if(v instanceof BestFoldingToImage){
+                return ((BestFoldingToImage)v).getMaxH();
             }
         }
-        return maxHAcrossVisualiszators;
+        return 0;
     }
 
     public int getMaxW() {
-        int maxWAcrossVisualiszators = 0;
         for (Visualizer v : visualizers) {
-            if (maxWAcrossVisualiszators < v.getMaxW()) {
-                maxWAcrossVisualiszators = v.getMaxW();
+            if(v instanceof BestFoldingToImage){
+                return ((BestFoldingToImage)v).getMaxW();
             }
         }
-        return maxWAcrossVisualiszators;
+        return 0;
     }
 }
