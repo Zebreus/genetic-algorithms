@@ -4,5 +4,6 @@ public enum VisualizerMethods {
     Console,
     Image,
     Video,
-    Log
+    Log,
+    Generation
 }

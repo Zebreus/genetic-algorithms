@@ -176,6 +176,9 @@ public class Config {
                 case "log":
                     visualizers[i] = VisualizerMethods.Log;
                     break;
+                case "generation":
+                    visualizers[i] = VisualizerMethods.Generation;
+                    break;
             }
         }
 

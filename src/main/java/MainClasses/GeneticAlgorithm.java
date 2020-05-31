@@ -14,6 +14,7 @@ import Selectors.Tournament;
 import Visualization.Visualizers.BestFoldingToConsole;
 import Visualization.Visualizers.BestFoldingToImage;
 
+import Visualization.Visualizers.GenerationOverviewToConsole;
 import Visualization.Visualizers.GenerationProgressToLog;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -88,6 +89,9 @@ public class GeneticAlgorithm {
                 }else if (vm.equals(VisualizerMethods.Log)) {
                     this.visualizers[j] = new GenerationProgressToLog(isHydrophobic, config);
                     j++;
+                }else if (vm.equals(VisualizerMethods.Generation)) {
+                    this.visualizers[j] = new GenerationOverviewToConsole(isHydrophobic, config);
+                    j++;
                 }
             }
 
@@ -142,42 +146,14 @@ public class GeneticAlgorithm {
         evaluateGeneration(config.getTotalGenerations()-1);
     }
 
-    private int evaluateGeneration(int gen) {
-        // Evaluate current generation
-        System.out.println("Generation " + gen + ":");
-
-        double bestFitness = 0;
-        int bestIndex = 0;
-        this.totalFitness = 0;
-        for (int i = 0; i < config.getPopulationSize(); i++) {
+    private void evaluateGeneration(int gen) {
+        for (int i = 0; i < population.length; i++) {
             this.population[i] = this.evaluator.evaluateFitness(this.population[i]);
-            this.fitness[i] = this.population[i].getFitness();
-            this.totalFitness += this.fitness[i];
-
-            if (this.fitness[i] > bestFitness) {
-                bestFitness = this.fitness[i];
-                bestIndex = i;
-            }
         }
 
         for (Visualizer v : this.visualizers) {
-            //TODO Print real bond and overlap amount
             v.drawProtein(this.population, this);
         }
-
-        //TODO Print real bond and overlap amount
-        System.out.println("The fitness is: " + bestFitness
-                    + " [hydrophobicBonds = " + -1 + " | overlaps = " + -1 + "]");
-
-        // Save the overall best
-        if (bestFitness >= this.overallBestFitness) {
-            this.overallBestFitness = bestFitness;
-            this.overallBest = new Candidate(this.population[bestIndex].getFolding());
-        }
-
-        double averageFitness = this.totalFitness / config.getPopulationSize();
-
-        return bestIndex;
     }
 
     public int getMaxH() {
