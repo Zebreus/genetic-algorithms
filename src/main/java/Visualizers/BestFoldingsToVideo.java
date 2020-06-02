@@ -193,9 +193,8 @@ public class BestFoldingsToVideo implements Visualizer {
 
         // draws input image to the top left corner
         Graphics2D g2d = outputImage.createGraphics();
-        //TODO The following two lines should be unnecessary
-        //g2d.setColor(Config.imageBackground);
-        //g2d.fillRect(0,0, maxWidthAfterIndex[0], maxHeightAfterIndex[0]);
+        g2d.setColor(config.getImageBackground());
+        g2d.fillRect(0,0, maxWidthAfterIndex[0], maxHeightAfterIndex[0]);
 
         int newHeight = 0;
         int newWidth = 0;
