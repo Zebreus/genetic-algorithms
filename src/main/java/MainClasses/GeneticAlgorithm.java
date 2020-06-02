@@ -8,15 +8,12 @@ import InitialGenerationCreators.StraightLine;
 import Interfaces.*;
 import Mutators.Crossover;
 import Mutators.SinglePoint;
+import Mutators.SinglePointGlobalBend;
 import Selectors.FitnessProportional;
 import Selectors.OnlyBest;
 import Selectors.Tournament;
-import Visualizers.BestFoldingToConsole;
-import Visualizers.BestFoldingToImage;
+import Visualizers.*;
 
-import Visualizers.BestFoldingsToVideo;
-import Visualizers.GenerationOverviewToConsole;
-import Visualizers.GenerationProgressToLog;
 import java.util.Random;
 
 public class GeneticAlgorithm {
@@ -105,6 +102,10 @@ public class GeneticAlgorithm {
                 } else if (config.getMutatorMethods()[i].equals(MutatorMethods.Crossover)) {
                     this.mutators[i] = new Crossover<>(DirectionNESW.class, this.rand,
                             config.getCrossoverAttemptsPerCandidate(), config.getCrossoverChance(), config.getCrossoverMinimalChance(), config.getCrossoverMultiplier());
+
+                } else if (config.getMutatorMethods()[i].equals(MutatorMethods.SinglePointGlobal)) {
+                    this.mutators[i] = new SinglePointGlobalBend<>(DirectionNESW.class, this.rand,
+                            config.getMutationAttemptsPerCandidate(), config.getMutationChance(), config.getMutationMinimalChance(), config.getMutationMultiplier());
                 }
             }
 

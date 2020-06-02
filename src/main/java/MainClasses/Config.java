@@ -134,6 +134,8 @@ public class Config {
                 mutatorMethods[i] = MutatorMethods.SinglePoint;
             } else if (mutatorsToUse[i].equals("crossover")) {
                 mutatorMethods[i] = MutatorMethods.Crossover;
+            } else if (mutatorsToUse[i].equals("singlePointGlobal")) {
+                mutatorMethods[i] = MutatorMethods.SinglePointGlobal;
             }
         }
 

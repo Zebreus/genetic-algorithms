@@ -2,9 +2,10 @@ package Mutators;
 
 import Interfaces.Mutator;
 import MainClasses.Candidate;
+
 import java.util.Random;
 
-public class SinglePointBend<T extends Enum<?>> implements Mutator {
+public class SinglePointGlobalBend<T extends Enum<?>> implements Mutator { // TODO: Maybe this should just extend SinglePoint
 
     boolean isFRL;
     Class<T> possibleDirections;
@@ -14,8 +15,8 @@ public class SinglePointBend<T extends Enum<?>> implements Mutator {
     double mutationMinimalChance;
     double mutationMultiplier;
 
-    public SinglePointBend(Class<T> possibleDirections, Random rand, int mutationAttemptsPerCandidate,
-                       double mutationChance, double mutationMinimalChance, double mutationMultiplier) {
+    public SinglePointGlobalBend(Class<T> possibleDirections, Random rand, int mutationAttemptsPerCandidate,
+                                 double mutationChance, double mutationMinimalChance, double mutationMultiplier) {
         this.possibleDirections = possibleDirections;
         this.isFRL = Mutator.isFRLEncoding(possibleDirections);
         this.rand = rand;
@@ -38,11 +39,23 @@ public class SinglePointBend<T extends Enum<?>> implements Mutator {
                 for (int j = 0; j < this.mutationAttemptsPerCandidate; j++) {
                     if (this.mutationChance > this.rand.nextDouble()) {
                         int mutationPlace = this.rand.nextInt(proteinLength);
-                        // TODO Do complete bend instead of local bend
                         if (this.isFRL) {
                             mutatedFolding[mutationPlace] = this.rand.nextInt(3);
                         } else {
-                            mutatedFolding[mutationPlace] = this.rand.nextInt(4);
+                            int oldDirection = mutatedFolding[mutationPlace];
+                            if (mutationPlace == 0) {
+                                // Allow any direction in the first position
+                                mutatedFolding[mutationPlace] = this.rand.nextInt(4);
+                            } else {
+                                // Make sure there can never be a backtracking overlap while mutating
+                                mutatedFolding[mutationPlace] =
+                                        ((mutatedFolding[mutationPlace-1] - 1 + this.rand.nextInt(3)) + 4 ) % 4;
+                            }
+                            // Also bend the following amino acids in the right way to achieve a "global" bend
+                            int offset = (mutatedFolding[mutationPlace] - oldDirection + 4) % 4;
+                            for (int r = mutationPlace + 1; r < mutatedFolding.length; r++) {
+                                mutatedFolding[r] = (mutatedFolding[r] + offset) % 4;
+                            }
                         }
                     }
                 }
