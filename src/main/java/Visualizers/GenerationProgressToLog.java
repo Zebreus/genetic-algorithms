@@ -5,6 +5,7 @@ import Interfaces.Visualizer;
 import MainClasses.Candidate;
 import MainClasses.Config;
 import MainClasses.GeneticAlgorithm;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,7 @@ public class GenerationProgressToLog implements Visualizer {
     }
 
     int bonds = bondsOverlapsEvaluator.evaluateBonds(bestCandidateOfGeneration);
-    int overlaps = bondsOverlapsEvaluator.evaluateBonds(bestCandidateOfGeneration);
+    int overlaps = bondsOverlapsEvaluator.evaluateOverlaps(bestCandidateOfGeneration);
 
     String log = String.format("%d\t%.4f\t%.4f\t%.4f\t %d\t%d\n",
         geneticAlgorithm.generation,

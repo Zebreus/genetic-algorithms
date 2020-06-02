@@ -5,9 +5,6 @@ import Interfaces.Visualizer;
 import MainClasses.Candidate;
 import MainClasses.Config;
 import MainClasses.GeneticAlgorithm;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class GenerationOverviewToConsole implements Visualizer {
 
@@ -33,7 +30,7 @@ public class GenerationOverviewToConsole implements Visualizer {
     }
 
     int bonds = bondsOverlapsEvaluator.evaluateBonds(bestCandidateOfGeneration);
-    int overlaps = bondsOverlapsEvaluator.evaluateBonds(bestCandidateOfGeneration);
+    int overlaps = bondsOverlapsEvaluator.evaluateOverlaps(bestCandidateOfGeneration);
 
     System.out.println("Generation " + geneticAlgorithm.generation + "/" + config.getTotalGenerations() + ":");
     System.out.println("Population size: " + generation.length);

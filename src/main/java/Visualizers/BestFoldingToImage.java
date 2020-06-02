@@ -3,19 +3,15 @@ package Visualizers;
 import Enums.State;
 import Evaluators.EvaluatorNESW;
 import Interfaces.Visualizer;
-import MainClasses.Candidate;
-import MainClasses.Config;
-import MainClasses.GeneticAlgorithm;
-import MainClasses.Vertex;
-import MainClasses.Cell;
+import MainClasses.*;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class BestFoldingToImage implements Visualizer {
@@ -145,7 +141,7 @@ public class BestFoldingToImage implements Visualizer {
         //TODO Get the labels from the new Generation class?
         EvaluatorNESW evaluator = new EvaluatorNESW(1,isHydrophobic);
         int bonds = evaluator.evaluateBonds(bestCandidateOfGeneration);
-        int overlaps = evaluator.evaluateBonds(bestCandidateOfGeneration);
+        int overlaps = evaluator.evaluateOverlaps(bestCandidateOfGeneration);
         String label = "Gen: " + geneticAlgorithm.generation
                 + "     Fitness: " + String.format("%.4f", bestCandidateOfGeneration.getFitness())
                 + "     H/H Bonds: " + bonds

@@ -2,7 +2,6 @@ package Evaluators;
 
 import Interfaces.Evaluator;
 import MainClasses.Candidate;
-import MainClasses.Config;
 import MainClasses.Vertex;
 
 public class EvaluatorNESW implements Evaluator {
@@ -66,7 +65,6 @@ public class EvaluatorNESW implements Evaluator {
             }
         }
         overlaps /= 2;
-        overlaps = overlaps;
 
         return overlaps;
     }

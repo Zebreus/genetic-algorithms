@@ -2,9 +2,9 @@ package Interfaces;
 
 import Enums.State;
 import MainClasses.Candidate;
+import MainClasses.Cell;
 import MainClasses.GeneticAlgorithm;
 import MainClasses.Vertex;
-import MainClasses.Cell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +52,7 @@ public interface Visualizer {
             vertex.x *= 2;
             vertex.y += Math.abs(minY);
             vertex.y *= 2;
+            vertex.isStretched = true;
         }
 
         // Add vertexes and connections to 2d array
