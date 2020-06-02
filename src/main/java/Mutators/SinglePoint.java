@@ -43,7 +43,14 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
                         if (this.isFRL) {
                             mutatedFolding[mutationPlace] = this.rand.nextInt(3);
                         } else {
-                            mutatedFolding[mutationPlace] = this.rand.nextInt(4);
+                            if (mutationPlace == 0) {
+                                // Allow any direction in the first position
+                                mutatedFolding[mutationPlace] = this.rand.nextInt(4);
+                            } else {
+                                // Make sure there can never be a backtracking overlap while mutating
+                                mutatedFolding[mutationPlace] =
+                                        ((mutatedFolding[mutationPlace-1] - 1 + this.rand.nextInt(3)) + 4 ) % 4;
+                            }
                         }
                     }
                 }
