@@ -152,7 +152,7 @@ public class Config {
         // Output settings
         jobName = this.properties.getProperty("jobName");
         if(jobName.equals("")) {
-            SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyyHHmmss");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy_HH-mm-ss");
             Date date = new Date();
             jobName = formatter.format(date);
         }
