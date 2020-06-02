@@ -150,9 +150,8 @@ public class Config {
         crossoverMultiplier = Double.parseDouble(this.properties.getProperty("crossoverMultiplier"));
 
         // Output settings
-        if(properties.containsKey("jobName")){
-            jobName = this.properties.getProperty("jobName");
-        }else{
+        jobName = this.properties.getProperty("jobName");
+        if(jobName.equals("")) {
             SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyyHHmmss");
             Date date = new Date();
             jobName = formatter.format(date);
@@ -275,7 +274,7 @@ public class Config {
     }
 
     public String getImageSequenceDirectory() {
-        return imageSequenceDirectory;
+        return imageSequenceDirectory + "/" + jobName;
     }
 
     public String getVideoDirectory() {
