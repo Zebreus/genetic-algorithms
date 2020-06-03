@@ -47,6 +47,7 @@ public class Config {
     private int imageFps;
     private int imagesToFpsIncrease;
     private int imageFpsMax;
+    private int imageInterval;
     private boolean zoom;
 
     // For images
@@ -188,6 +189,7 @@ public class Config {
         imageFps = Integer.parseInt(this.properties.getProperty("imgFps"));
         imagesToFpsIncrease = Integer.parseInt(this.properties.getProperty("imagesToFpsIncrease"));
         imageFpsMax = Integer.parseInt(this.properties.getProperty("imgFpsMax"));
+        imageInterval = Integer.parseInt(this.properties.getProperty("imageInterval"));
         zoom = this.properties.getProperty("zoom").equals("true");
     }
 
@@ -293,6 +295,10 @@ public class Config {
 
     public int getImageFpsMax() {
         return imageFpsMax;
+    }
+
+    public int getImageInterval() {
+        return imageInterval;
     }
 
     public boolean isZoom() {

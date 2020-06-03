@@ -143,6 +143,7 @@ public class GeneticAlgorithm {
     //     mutateGeneration(Mutator e);
     private void evaluateGeneration() {
         for (int i = 0; i < population.length; i++) {
+
             this.population[i] = this.evaluator.evaluateFitness(this.population[i]);
         }
     }
