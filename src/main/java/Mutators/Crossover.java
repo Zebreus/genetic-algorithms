@@ -60,6 +60,8 @@ public class Crossover<T extends Enum<?>> implements Mutator {
             System.out.printf("CrossoverChance: %.4f\n", this.crossoverChance);
 
             this.crossoverChance *= (1 - this.crossoverMultiplier); // Lower mutation rate with generation
+        }else{
+            return population;
         }
         return mutatedPopulation;
     }

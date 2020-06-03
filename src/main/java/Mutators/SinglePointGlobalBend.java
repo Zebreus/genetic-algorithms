@@ -64,6 +64,8 @@ public class SinglePointGlobalBend<T extends Enum<?>> implements Mutator { // TO
             System.out.printf("MutationChance: %.4f\n", this.mutationChance);
 
             this.mutationChance *= (1 - this.mutationMultiplier); // Lower mutation rate with generation
+        }else{
+            return population;
         }
         return mutatedPopulation;
     }

@@ -59,6 +59,8 @@ public class SinglePoint<T extends Enum<?>> implements Mutator {
             System.out.printf("MutationChance: %.4f\n", this.mutationChance);
 
             this.mutationChance *= (1 - this.mutationMultiplier); // Lower mutation rate with generation
+        }else{
+            return population;
         }
         return mutatedPopulation;
     }
